@@ -24,4 +24,3 @@ Window.mainloop()
 
 
 ######## Marcel ########
-print(Test)
