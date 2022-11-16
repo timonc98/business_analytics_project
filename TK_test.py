@@ -11,13 +11,16 @@ def Window_Zwei():
 
 ######## Lukas ######## 
 Window = Tk()
+s = ttk.Style()
+
 Window.geometry("900x500")
 Window.configure(background='lightgrey')
 
-frm = ttk.Frame(Window, padding=10,)
+s.configure('Frame1.TFrame', background='lightgrey')
+frm = ttk.Frame(Window, padding=10,style='Frame1.TFrame')
 
 frm.grid()
-ttk.Label(frm, text="Hello World!").grid(column=0, row=0)
+ttk.Label(frm, text="Hello World!",background='lightgrey').grid(column=0, row=0)
 ttk.Button(frm, text="Quit", command=Window_Zwei).grid(column=1, row=0)
 Text(frm, height = 5, width = 52).grid(column=2, row=0)
 Window.mainloop()
