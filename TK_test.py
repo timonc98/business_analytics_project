@@ -1,5 +1,9 @@
+
+
 from tkinter import *
 from tkinter import ttk
+### Imports
+
 ######## Lukas ######## 
 Window = Tk()
 Window.geometry("900x500")
