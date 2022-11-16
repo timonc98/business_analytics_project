@@ -14,3 +14,6 @@ ttk = Text(frm, height = 5, width = 52).grid(column=2, row=0)
 Window.mainloop()
 
 test timon
+
+
+#### das ist aber mein text
