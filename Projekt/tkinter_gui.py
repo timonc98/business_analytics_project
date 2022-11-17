@@ -30,7 +30,7 @@ def Create_Athlete():
     variable = StringVar(frm_ath1)
     variable.set(OPTIONS[0])
     Gender = ttk.OptionMenu(frm_ath1, variable, *OPTIONS ).grid(column=1, row=1,padx=10, pady=10)
-
+   
     ttk.Label(frm_ath1, text="Name",background='').grid(column=0, row=2,padx=10, pady=10)
     Name = Text(frm_ath1, height = 1, width = 10).grid(column=1, row=2)
     ttk.Label(frm_ath1, text="Weight",background='').grid(column=0, row=3,padx=10, pady=10)
@@ -136,8 +136,8 @@ Button(frm, text="Quit", font=myFont, bg='GREY', command=Window.destroy).grid(co
 Window.mainloop()
 
 ######## Timon ########
-name2 = "Timon"
 
+Weight=187
 ######## Alex ########
 
 
