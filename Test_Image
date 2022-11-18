@@ -1,0 +1,48 @@
+from tkinter import *
+from tkinter import ttk
+import tkinter.font as font
+import PIL
+from PIL import Image, ImageTK
+
+
+#### Farben
+LGrey = '#545454'
+DGrey = '#242424'
+RGrey = '#2e2e2e'
+
+Window = Tk()
+Window.title("Bussiness Athletics APP")
+Window.geometry("500x500")
+
+####Bilder
+Creat_Bild_active = Image.open("create_athlete_active.png")
+Creat_Bild_inactive = Image.open("Create_Athlete_inactive.png")
+
+
+def on_enter(event):
+    Create.config(image=Window.Creat_Bild_active)
+
+def on_leave(event):
+    Create.config(image=Window.Creat_Bild_inactive)
+
+s = ttk.Style()
+Window.columnconfigure(0, weight=1) 
+Window.rowconfigure(0, weight=1)
+
+Window.configure(background=RGrey)
+
+s.configure('Frame1.TFrame', background=RGrey)
+frm = ttk.Frame(Window ,style='Frame1.TFrame')
+frm.grid()
+
+myFont = font.Font(family='Helvetica',size=15)
+Create = Button(frm, image=Window.Creat_Bild_inactive, bg=LGrey, command='').grid(column=0, row=0,padx=10, pady=10)
+Button(frm, text="Create Course", font=myFont, bg=LGrey, command='').grid(column=0, row=1,padx=10, pady=10)
+Button(frm, text="Enter Training Data (complete)", font=myFont, bg=LGrey, command='').grid(column=0, row=2,padx=10, pady=10)
+Button(frm, text="Quit", font=myFont, bg=LGrey, command=Window.destroy).grid(column=0, row=3,padx=10, pady=10)
+
+Canvas.create_window(640,360, window=Create)
+Create.bind("<Enter>", on_enter)
+Create.bind("<Leave>", on_leave)
+
+Window.mainloop()

@@ -1,6 +1,14 @@
+
+
 from tkinter import *
 from tkinter import ttk
 import tkinter.font as font
+
+#### Farben
+LGrey = '#545454'
+DGrey = '#242424'
+RGrey = '#2e2e2e'
+
 ### Functions
 
 def Create_Athlete():
@@ -10,13 +18,13 @@ def Create_Athlete():
     #athletic.geometry("900x500")
     athletic.columnconfigure(0, weight=1) 
     athletic.rowconfigure(0, weight=1)
-
+   
     ss = ttk.Style()
     s.configure('Frame1.TFrame', background='lightgrey')
 
     frm_ath = ttk.Frame(athletic,style='Frame1.TFrame')
     frm_ath.grid(column=0, row=0)
-
+   
 
     ttk.Label(frm_ath, text="Create Athlete",background='').grid(column=0, row=0,padx=10, pady=10)
 
@@ -30,7 +38,7 @@ def Create_Athlete():
     variable = StringVar(frm_ath1)
     variable.set(OPTIONS[0])
     Gender = ttk.OptionMenu(frm_ath1, variable, *OPTIONS ).grid(column=1, row=1,padx=10, pady=10)
-   
+
     ttk.Label(frm_ath1, text="Name",background='').grid(column=0, row=2,padx=10, pady=10)
     Name = Text(frm_ath1, height = 1, width = 10).grid(column=1, row=2)
     ttk.Label(frm_ath1, text="Weight",background='').grid(column=0, row=3,padx=10, pady=10)
@@ -116,28 +124,34 @@ def Training_Data():
 
 ######## Lukas ######## 
 Window = Tk()
-Window.title("Main Window - Training Managment")
+Window.title("Bussiness Athletics APP")
+Window.geometry("500x500")
+#Costumtkinter.set_appearance_mode("System")
+#Costumtkinter.set_default_color_theme("grey")
+#Window.wm_overrideredirect(True)
+
+
 s = ttk.Style()
 Window.columnconfigure(0, weight=1) 
 Window.rowconfigure(0, weight=1)
-Window.geometry("500x500")
-Window.configure(background='lightgrey')
+Canvas_Window = Canvas(Window, bg=RGrey, relief='raised',bd=0,highlightthickness=0)
+Window.configure(background=RGrey)
 
-s.configure('Frame1.TFrame', background='lightgrey')
+s.configure('Frame1.TFrame', background=RGrey)
 frm = ttk.Frame(Window ,style='Frame1.TFrame')
 frm.grid()
 
 myFont = font.Font(family='Helvetica',size=15)
-Button(frm, text="Create Athlete", font=myFont, bg='GREY', command=Create_Athlete).grid(column=0, row=0,padx=10, pady=10)
-Button(frm, text="Create Course", font=myFont, bg='GREY', command=Create_Course).grid(column=0, row=1,padx=10, pady=10)
-Button(frm, text="Enter Training Data (complete)", font=myFont, bg='GREY', command=Training_Data).grid(column=0, row=2,padx=10, pady=10)
-Button(frm, text="Quit", font=myFont, bg='GREY', command=Window.destroy).grid(column=0, row=3,padx=10, pady=10)
+Button(frm, text="Create Athlete", font=myFont, bg=LGrey, command=Create_Athlete).grid(column=0, row=0,padx=10, pady=10)
+Button(frm, text="Create Course", font=myFont, bg=LGrey, command=Create_Course).grid(column=0, row=1,padx=10, pady=10)
+Button(frm, text="Enter Training Data (complete)", font=myFont, bg=LGrey, command=Training_Data).grid(column=0, row=2,padx=10, pady=10)
+Button(frm, text="Quit", font=myFont, bg=LGrey, command=Window.destroy).grid(column=0, row=3,padx=10, pady=10)
 
 Window.mainloop()
 
 ######## Timon ########
 
-Weight=187
+
 ######## Alex ########
 
 
