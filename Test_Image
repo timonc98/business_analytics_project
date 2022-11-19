@@ -1,14 +1,6 @@
 from tkinter import *
 from PIL import Image, ImageTk
 
-def on_enter(event):
-    button.config(image=root.Creat_Bild_active,)
-
-def on_leave(event):
-    button.config(image=root.Creat_Bild_inactive,)
-
-def pressed():
-    print('hello')
 
 #### Farben
 LGrey = '#1b1b1b'#'#545454'
@@ -18,22 +10,145 @@ RGrey = '#2e2e2e'
 root = Tk()
 #root.title("Bussiness Athletics APP")
 root.geometry("1280x720")
+root.config(bg=LGrey)
+root.title('Business Athletics')
 
-canvas_main = Canvas(root, bg=LGrey)
-canvas_main.pack(fill=BOTH, expand=TRUE)
+#### Active Runder Knopf
+def Active_Button(ButtonName,Canvas_Name,Frame,ImageName_Active,ImageName_Inctive,Commando,Color,ButtonOrder):
+    Creat_Bild_active = Image.open(ImageName_Active)
+    Creat_Bild_inactive = Image.open(ImageName_Inctive)
 
-####Bilder
-Creat_Bild_active = Image.open("Create_Athlete_active.png")
-Creat_Bild_inactive = Image.open("Create_Athlete_inactive.png")
+    Creat_Bild_active =  Creat_Bild_active.resize((200, 100))
+    Creat_Bild_inactive =  Creat_Bild_inactive.resize((200, 100))
 
-root.btn_active = ImageTk.PhotoImage(Creat_Bild_active)
-root.btn_inactive = ImageTk.PhotoImage(Creat_Bild_inactive)
+    Frame.btn_active = ImageTk.PhotoImage(Creat_Bild_active)
+    Frame.btn_inactive = ImageTk.PhotoImage(Creat_Bild_inactive)
 
-button = Button(root, image=root.btn_inactive, bg=LGrey, width=400, height=200, bd=0, relief='sunken',activebackground=LGrey, command=pressed)
+    def on_enter(self):
+        ButtonName.config(image=Frame.btn_active)
 
-canvas_main.create_window(640,360, window=button)
+    def on_leave(event):
+        ButtonName.config(image=Frame.btn_inactive)
 
-button.bind("<Enter>", on_enter)
-button.bind("<Leave>", on_leave)
+   
+    ButtonName.config(image=Frame.btn_inactive, bg=Color, width=200, height=100, bd=0, relief='sunken',activebackground=LGrey, command=Commando)
+    #ButtonName.pack()
+
+    Canvas_Name.create_window(100,50, window=ButtonName)
+
+    ButtonName.bind("<Enter>", on_enter)
+    ButtonName.bind("<Leave>", on_leave)
+
+### Button FUnktions
+
+def Athlete_Window():
+    Label_Athlete_Window = Label(Second_Fame,text='Create Athlete',bg=LGrey,fg='White',pady = 50,font=('Calibri', 15))
+    Label_Athlete_Window.pack(side=TOP)
+
+    Athlete_Window_RIGHT = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
+    Athlete_Window_RIGHT.pack(side=LEFT)
+
+    Athlete_Window_LEFT = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5,highlightbackground=RGrey)
+    Athlete_Window_LEFT.pack(side=RIGHT)
+
+    canvas_Athlete_Window = Canvas(Athlete_Window_RIGHT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
+    canvas_Athlete_Window.pack(side = TOP)
+    canvas_Athlete_Window2 = Canvas(Athlete_Window_LEFT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
+    canvas_Athlete_Window2.pack(side = TOP)
+    canvas_Athlete_Window3= Canvas(Athlete_Window_LEFT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
+    canvas_Athlete_Window3.pack(side = TOP)
+
+    Label_Athlete_Gender = Label(Athlete_Window_RIGHT,text='Create Athlete',bg=LGrey,fg='White',pady = 50,font=('Calibri', 15))
+    Label_Athlete_Gender.pack(side=BOTTOM)
+    Text_Athlete_Gender = Text(Athlete_Window_RIGHT, height = 1, width = 10)
+    Text_Athlete_Gender.pack(side=RIGHT)
+
+    Label_Athlete_Name = Label(Athlete_Window_RIGHT,text='Create Athlete',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Athlete_Name.pack(side=BOTTOM)
+    Text_Athlete_Name = Text(Athlete_Window_RIGHT, height = 1, width = 10)
+    Text_Athlete_Name.pack(side=RIGHT)
+
+    Label_Athlete_Weight = Label(Athlete_Window_RIGHT,text='Create Athlete',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Athlete_Weight.pack(side=BOTTOM)
+    Text_Athlete_Weight = Text(Athlete_Window_RIGHT, height = 1, width = 10)
+    Text_Athlete_Weight.pack(side=RIGHT)
+
+    Label_Athlete_Size = Label(Athlete_Window_RIGHT,text='Create Athlete',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Athlete_Size.pack(side=BOTTOM)
+    Text_Athlete_Size = Text(Athlete_Window_RIGHT, height = 1, width = 10)
+    Text_Athlete_Size.pack(side=RIGHT)
+
+    Label_Athlete_ID = Label(Athlete_Window_LEFT,text='Create Athlete',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Athlete_ID.pack(side=BOTTOM)
+    Text_Athlete_ID = Text(Athlete_Window_LEFT, height = 1, width = 10)
+    Text_Athlete_ID.pack(side=RIGHT)
+
+
+    Create_Athlete = Button(canvas_Athlete_Window)
+    Create_Athlete.pack(side=BOTTOM)
+    Change_Athlete= Button(canvas_Athlete_Window2)
+    Change_Athlete.pack(side=BOTTOM)
+    Delete_Athlete= Button(canvas_Athlete_Window3)
+    Delete_Athlete.pack(side=BOTTOM)
+    
+    Active_Button(Create_Athlete,canvas_Athlete_Window,canvas_Athlete_Window,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",Athlete_Window,LGrey,LEFT)
+    Active_Button(Change_Athlete,canvas_Athlete_Window2,canvas_Athlete_Window2,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",Athlete_Window,LGrey,LEFT)
+    Active_Button(Delete_Athlete,canvas_Athlete_Window3,canvas_Athlete_Window3,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",Athlete_Window,LGrey,LEFT)
+
+
+def Course_Window():
+    print('Hello2')
+
+def Enter_Training_Window():
+    print('Hello2')
+
+def quit():
+    root.destroy()
+
+### Main
+
+Main_frame = Frame(root,width=300,height=700,bg=LGrey,bd=5, highlightbackground='white')
+Main_frame.pack(side=LEFT, padx=20, pady=2)
+
+Second_Fame = Frame(root,width=900,height=720,bg=LGrey,bd=5,highlightbackground=RGrey)
+Second_Fame.pack(side=LEFT, padx=20, pady=2)
+
+### Start Fenster
+Label_Main = Label(Main_frame,text='Training Management',bg=LGrey,fg='White',pady = 50,font=('Calibri', 15))
+Label_Main.pack(side=TOP)
+
+canvas_main = Canvas(Main_frame,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
+canvas_main.pack(side = TOP)
+
+canvas_main2 = Canvas(Main_frame,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
+canvas_main2.pack(side = TOP)
+
+canvas_main3 = Canvas(Main_frame,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
+canvas_main3.pack(side = TOP)
+
+canvas_main4 = Canvas(Main_frame,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
+canvas_main4.pack(side = TOP)
+
+Button1 = Button(canvas_main)
+Button1.pack()
+
+Button2 = Button(canvas_main2)
+Button2.pack()
+
+Button3 = Button(canvas_main3)
+Button3.pack()
+
+Button4 = Button(canvas_main4)
+Button4.pack()
+
+## Create Athlete
+Active_Button(Button1,canvas_main,canvas_main,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",Athlete_Window,LGrey,LEFT)
+## Create Course
+Active_Button(Button2,canvas_main2,canvas_main2,"Images\Create_Course_active.png","Images\Create_Course_inactive.png",Course_Window,LGrey,LEFT)
+##Enter Training Data
+Active_Button(Button3,canvas_main3,canvas_main3,"Images\Enter_Trainings_Data_active.png","Images\Enter_Trainings_Data_inactive.png",Enter_Training_Window,LGrey,LEFT)
+## Quite
+Active_Button(Button4,canvas_main4,canvas_main4,"Images\Quit_active.png","Images\Quit_inactive.png",quit,LGrey,LEFT)
+
 
 root.mainloop()
