@@ -1,48 +1,39 @@
 from tkinter import *
-from tkinter import ttk
-import tkinter.font as font
-import PIL
-from PIL import Image, ImageTK
+from PIL import Image, ImageTk
 
+def on_enter(event):
+    button.config(image=root.Creat_Bild_active,)
+
+def on_leave(event):
+    button.config(image=root.Creat_Bild_inactive,)
+
+def pressed():
+    print('hello')
 
 #### Farben
-LGrey = '#545454'
+LGrey = '#1b1b1b'#'#545454'
 DGrey = '#242424'
 RGrey = '#2e2e2e'
 
-Window = Tk()
-Window.title("Bussiness Athletics APP")
-Window.geometry("500x500")
+root = Tk()
+#root.title("Bussiness Athletics APP")
+root.geometry("1280x720")
+
+canvas_main = Canvas(root, bg=LGrey)
+canvas_main.pack(fill=BOTH, expand=TRUE)
 
 ####Bilder
-Creat_Bild_active = Image.open("create_athlete_active.png")
+Creat_Bild_active = Image.open("Create_Athlete_active.png")
 Creat_Bild_inactive = Image.open("Create_Athlete_inactive.png")
 
+root.btn_active = ImageTk.PhotoImage(Creat_Bild_active)
+root.btn_inactive = ImageTk.PhotoImage(Creat_Bild_inactive)
 
-def on_enter(event):
-    Create.config(image=Window.Creat_Bild_active)
+button = Button(root, image=root.btn_inactive, bg=LGrey, width=400, height=200, bd=0, relief='sunken',activebackground=LGrey, command=pressed)
 
-def on_leave(event):
-    Create.config(image=Window.Creat_Bild_inactive)
+canvas_main.create_window(640,360, window=button)
 
-s = ttk.Style()
-Window.columnconfigure(0, weight=1) 
-Window.rowconfigure(0, weight=1)
+button.bind("<Enter>", on_enter)
+button.bind("<Leave>", on_leave)
 
-Window.configure(background=RGrey)
-
-s.configure('Frame1.TFrame', background=RGrey)
-frm = ttk.Frame(Window ,style='Frame1.TFrame')
-frm.grid()
-
-myFont = font.Font(family='Helvetica',size=15)
-Create = Button(frm, image=Window.Creat_Bild_inactive, bg=LGrey, command='').grid(column=0, row=0,padx=10, pady=10)
-Button(frm, text="Create Course", font=myFont, bg=LGrey, command='').grid(column=0, row=1,padx=10, pady=10)
-Button(frm, text="Enter Training Data (complete)", font=myFont, bg=LGrey, command='').grid(column=0, row=2,padx=10, pady=10)
-Button(frm, text="Quit", font=myFont, bg=LGrey, command=Window.destroy).grid(column=0, row=3,padx=10, pady=10)
-
-Canvas.create_window(640,360, window=Create)
-Create.bind("<Enter>", on_enter)
-Create.bind("<Leave>", on_leave)
-
-Window.mainloop()
+root.mainloop()
