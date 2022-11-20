@@ -1,17 +1,23 @@
 from tkinter import *
 from PIL import Image, ImageTk
-
+from tkinter import ttk
 
 #### Farben
-LGrey = '#1b1b1b'#'#545454'
+LGrey = '#1b1b1b'
 DGrey = '#242424'
 RGrey = '#2e2e2e'
+HGrey = '#545454'
 
+#Wndow Config
 root = Tk()
-#root.title("Bussiness Athletics APP")
-root.geometry("1280x720")
-root.config(bg=LGrey)
+root.geometry("1180x640")
+root.config(bg=DGrey)
 root.title('Business Athletics')
+
+##Clear Frame
+def clear_frame(Frame_Name):
+   for widgets in Frame_Name.winfo_children():
+      widgets.destroy()
 
 #### Active Runder Knopf
 def Active_Button(ButtonName,Canvas_Name,Frame,ImageName_Active,ImageName_Inctive,Commando,Color,ButtonOrder):
@@ -32,7 +38,6 @@ def Active_Button(ButtonName,Canvas_Name,Frame,ImageName_Active,ImageName_Inctiv
 
    
     ButtonName.config(image=Frame.btn_inactive, bg=Color, width=200, height=100, bd=0, relief='sunken',activebackground=LGrey, command=Commando)
-    #ButtonName.pack()
 
     Canvas_Name.create_window(100,50, window=ButtonName)
 
@@ -42,58 +47,71 @@ def Active_Button(ButtonName,Canvas_Name,Frame,ImageName_Active,ImageName_Inctiv
 ### Button FUnktions
 
 def Athlete_Window():
-    Label_Athlete_Window = Label(Second_Fame,text='Create Athlete',bg=LGrey,fg='White',pady = 50,font=('Calibri', 15))
-    Label_Athlete_Window.pack(side=TOP)
+    clear_frame(Second_Fame)
+
+    Athlete_Window_TOP = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
+    Athlete_Window_TOP.grid(column=0,row=0,padx=10,pady=5,columnspan = 2)
+
+    Label_Athlete_Window = Label(Athlete_Window_TOP,text='Create Athlete',bg=LGrey,fg='White',font=('Calibri', 20))
+    Label_Athlete_Window.grid(pady = 45,padx=10, columnspan = 2)
 
     Athlete_Window_RIGHT = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
-    Athlete_Window_RIGHT.pack(side=LEFT)
+    Athlete_Window_RIGHT.grid(column=0,row=1,padx=10,pady=5)
 
     Athlete_Window_LEFT = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5,highlightbackground=RGrey)
-    Athlete_Window_LEFT.pack(side=RIGHT)
+    Athlete_Window_LEFT.grid(column=1,row=1,padx=10,pady=5)
+
+    Label_Athlete_Gender = Label(Athlete_Window_RIGHT,text='Gender',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Athlete_Gender.grid(column=0,row=0,padx=10,pady=5,sticky='w')
+
+    OPTIONS = ['Male','Femal','Divers']
+    variable = StringVar(Athlete_Window_RIGHT)
+    variable.set(OPTIONS[0])
+    Athlete_Gender = ttk.OptionMenu(Athlete_Window_RIGHT,variable, *OPTIONS )
+    Athlete_Gender.grid(column=1,row=0,padx=10,pady=5,sticky='nsew')
+
+    Label_Athlete_Name = Label(Athlete_Window_RIGHT,text='Name',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Athlete_Name.grid(column=0,row=1,padx=10,pady=5,sticky='w')
+    Text_Athlete_Name = Text(Athlete_Window_RIGHT, height = 1, width = 20)
+    Text_Athlete_Name.grid(column=1,row=1,padx=10,pady=5,sticky='nsew')
+
+    Label_Athlete_Weight = Label(Athlete_Window_RIGHT,text='Weight',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Athlete_Weight.grid(column=0,row=2,padx=10,pady=5,sticky='w')
+    Text_Athlete_Weight = Text(Athlete_Window_RIGHT, height = 1, width = 20)
+    Text_Athlete_Weight.grid(column=1,row=2,padx=10,pady=5,sticky='nsew')
+
+    Label_Athlete_Size = Label(Athlete_Window_RIGHT,text='Size',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Athlete_Size.grid(column=0,row=3,padx=10,pady=5,sticky='w')
+    Text_Athlete_Size = Text(Athlete_Window_RIGHT, height = 1, width = 20)
+    Text_Athlete_Size.grid(column=1,row=3,padx=10,pady=5,sticky='nsew')
+
+    Label_Athlete_ID = Label(Athlete_Window_LEFT,text='ID',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Athlete_ID.grid(column=0,row=0,padx=10,pady=5,sticky='w')
+    Text_Athlete_ID = Text(Athlete_Window_LEFT, height = 1, width = 20)
+    Text_Athlete_ID.grid(column=1,row=0,padx=10,pady=5,sticky='nsew')
+    
+    Empty_row = Label(Athlete_Window_LEFT, text='     \n   ', bg=LGrey)
+    Empty_row.grid(column=0, row=2,padx=50,pady=5, )
+    Empty_row = Label(Athlete_Window_RIGHT, text='     \n   ', bg=LGrey)
+    Empty_row.grid(column=0, row=4,padx=50,pady=5, )
 
     canvas_Athlete_Window = Canvas(Athlete_Window_RIGHT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
-    canvas_Athlete_Window.pack(side = TOP)
+    canvas_Athlete_Window.grid(row=5,padx=50,pady=5, columnspan = 2,sticky='ew')
     canvas_Athlete_Window2 = Canvas(Athlete_Window_LEFT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
-    canvas_Athlete_Window2.pack(side = TOP)
+    canvas_Athlete_Window2.grid(row=3,padx=50,pady=5, columnspan = 2,sticky='w')
     canvas_Athlete_Window3= Canvas(Athlete_Window_LEFT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
-    canvas_Athlete_Window3.pack(side = TOP)
-
-    Label_Athlete_Gender = Label(Athlete_Window_RIGHT,text='Create Athlete',bg=LGrey,fg='White',pady = 50,font=('Calibri', 15))
-    Label_Athlete_Gender.pack(side=BOTTOM)
-    Text_Athlete_Gender = Text(Athlete_Window_RIGHT, height = 1, width = 10)
-    Text_Athlete_Gender.pack(side=RIGHT)
-
-    Label_Athlete_Name = Label(Athlete_Window_RIGHT,text='Create Athlete',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
-    Label_Athlete_Name.pack(side=BOTTOM)
-    Text_Athlete_Name = Text(Athlete_Window_RIGHT, height = 1, width = 10)
-    Text_Athlete_Name.pack(side=RIGHT)
-
-    Label_Athlete_Weight = Label(Athlete_Window_RIGHT,text='Create Athlete',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
-    Label_Athlete_Weight.pack(side=BOTTOM)
-    Text_Athlete_Weight = Text(Athlete_Window_RIGHT, height = 1, width = 10)
-    Text_Athlete_Weight.pack(side=RIGHT)
-
-    Label_Athlete_Size = Label(Athlete_Window_RIGHT,text='Create Athlete',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
-    Label_Athlete_Size.pack(side=BOTTOM)
-    Text_Athlete_Size = Text(Athlete_Window_RIGHT, height = 1, width = 10)
-    Text_Athlete_Size.pack(side=RIGHT)
-
-    Label_Athlete_ID = Label(Athlete_Window_LEFT,text='Create Athlete',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
-    Label_Athlete_ID.pack(side=BOTTOM)
-    Text_Athlete_ID = Text(Athlete_Window_LEFT, height = 1, width = 10)
-    Text_Athlete_ID.pack(side=RIGHT)
-
+    canvas_Athlete_Window3.grid(row=4,padx=50,pady=5, columnspan = 2,sticky='n')
 
     Create_Athlete = Button(canvas_Athlete_Window)
-    Create_Athlete.pack(side=BOTTOM)
+    Create_Athlete.grid(column=0,row=0)
     Change_Athlete= Button(canvas_Athlete_Window2)
-    Change_Athlete.pack(side=BOTTOM)
+    Change_Athlete.grid(column=0,row=0)
     Delete_Athlete= Button(canvas_Athlete_Window3)
-    Delete_Athlete.pack(side=BOTTOM)
+    Delete_Athlete.grid(column=0,row=0)
     
-    Active_Button(Create_Athlete,canvas_Athlete_Window,canvas_Athlete_Window,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",Athlete_Window,LGrey,LEFT)
-    Active_Button(Change_Athlete,canvas_Athlete_Window2,canvas_Athlete_Window2,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",Athlete_Window,LGrey,LEFT)
-    Active_Button(Delete_Athlete,canvas_Athlete_Window3,canvas_Athlete_Window3,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",Athlete_Window,LGrey,LEFT)
+    Active_Button(Create_Athlete,canvas_Athlete_Window,canvas_Athlete_Window,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",(),LGrey,LEFT)
+    Active_Button(Change_Athlete,canvas_Athlete_Window2,canvas_Athlete_Window2,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",(),LGrey,LEFT)
+    Active_Button(Delete_Athlete,canvas_Athlete_Window3,canvas_Athlete_Window3,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",(),LGrey,LEFT)
 
 
 def Course_Window():
@@ -107,39 +125,39 @@ def quit():
 
 ### Main
 
-Main_frame = Frame(root,width=300,height=700,bg=LGrey,bd=5, highlightbackground='white')
-Main_frame.pack(side=LEFT, padx=20, pady=2)
+Main_frame = Frame(root,width=300,height=500,bg=LGrey,bd=5, highlightbackground='white')
+Main_frame.grid(column=0,row=0,padx=10,pady=5)
 
-Second_Fame = Frame(root,width=900,height=720,bg=LGrey,bd=5,highlightbackground=RGrey)
-Second_Fame.pack(side=LEFT, padx=20, pady=2)
+Second_Fame = Frame(root,width=678,height=500,bg=LGrey,bd=5,highlightbackground=RGrey)
+Second_Fame.grid(column=1,row=0,padx=10,pady=5,sticky='nsew')
 
 ### Start Fenster
-Label_Main = Label(Main_frame,text='Training Management',bg=LGrey,fg='White',pady = 50,font=('Calibri', 15))
-Label_Main.pack(side=TOP)
+Label_Main = Label(Main_frame,text='Training Management',bg=LGrey,fg='White',pady = 50,font=('Calibri', 20))
+Label_Main.grid(column=0,row=0,padx=10,pady=5)
 
 canvas_main = Canvas(Main_frame,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
-canvas_main.pack(side = TOP)
+canvas_main.grid(column=0,row=1,padx=10,pady=5)
 
 canvas_main2 = Canvas(Main_frame,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
-canvas_main2.pack(side = TOP)
+canvas_main2.grid(column=0,row=2,padx=10,pady=5)
 
 canvas_main3 = Canvas(Main_frame,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
-canvas_main3.pack(side = TOP)
+canvas_main3.grid(column=0,row=3,padx=10,pady=5)
 
 canvas_main4 = Canvas(Main_frame,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
-canvas_main4.pack(side = TOP)
+canvas_main4.grid(column=0,row=4,padx=10,pady=5)
 
 Button1 = Button(canvas_main)
-Button1.pack()
+Button1.grid(column=0,row=0)
 
 Button2 = Button(canvas_main2)
-Button2.pack()
+Button2.grid(column=0,row=0)
 
 Button3 = Button(canvas_main3)
-Button3.pack()
+Button3.grid(column=0,row=0)
 
 Button4 = Button(canvas_main4)
-Button4.pack()
+Button4.grid(column=0,row=0)
 
 ## Create Athlete
 Active_Button(Button1,canvas_main,canvas_main,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",Athlete_Window,LGrey,LEFT)
