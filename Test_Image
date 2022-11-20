@@ -110,8 +110,8 @@ def Athlete_Window():
     Delete_Athlete.grid(column=0,row=0)
     
     Active_Button(Create_Athlete,canvas_Second_Window,canvas_Second_Window,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",(),LGrey,LEFT)
-    Active_Button(Change_Athlete,canvas_Second_Window2,canvas_Second_Window2,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",(),LGrey,LEFT)
-    Active_Button(Delete_Athlete,canvas_Second_Window3,canvas_Second_Window3,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",(),LGrey,LEFT)
+    Active_Button(Change_Athlete,canvas_Second_Window2,canvas_Second_Window2,"Images\Change_Athlete_active.png","Images\Change_Athlete_inactive.png",(),LGrey,LEFT)
+    Active_Button(Delete_Athlete,canvas_Second_Window3,canvas_Second_Window3,"Images\Delete_Athlete_active.png","Images\Delete_Athlete_inactive.png",(),LGrey,LEFT)
 
 def Course_Window():
     clear_frame(Second_Fame)
@@ -164,9 +164,9 @@ def Course_Window():
     Delete_Training= Button(canvas_Second_Window3)
     Delete_Training.grid(column=0,row=0)
     
-    Active_Button(Create_Training,canvas_Second_Window,canvas_Second_Window,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",(),LGrey,LEFT)
-    Active_Button(Change_Traning,canvas_Second_Window2,canvas_Second_Window2,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",(),LGrey,LEFT)
-    Active_Button(Delete_Training,canvas_Second_Window3,canvas_Second_Window3,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",(),LGrey,LEFT)
+    Active_Button(Create_Training,canvas_Second_Window,canvas_Second_Window,"Images\Create_Course_active.png","Images\Create_Course_inactive.png",(),LGrey,LEFT)
+    Active_Button(Change_Traning,canvas_Second_Window2,canvas_Second_Window2,"Images\Change_Training_active.png","Images\Change_Training_inactive.png",(),LGrey,LEFT)
+    Active_Button(Delete_Training,canvas_Second_Window3,canvas_Second_Window3,"Images\Delete_Training_active.png","Images\Delete_Training_inactive.png",(),LGrey,LEFT)
 
 
 def Enter_Training_Window():
@@ -227,8 +227,8 @@ def Enter_Training_Window():
     Delete_Athlete= Button(canvas_Second_Window3)
     Delete_Athlete.grid(column=0,row=0)
     
-    Active_Button(Change_Athlete,canvas_Second_Window2,canvas_Second_Window2,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",(),LGrey,LEFT)
-    Active_Button(Delete_Athlete,canvas_Second_Window3,canvas_Second_Window3,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",(),LGrey,LEFT)
+    Active_Button(Change_Athlete,canvas_Second_Window2,canvas_Second_Window2,"Images\Save_Training_Data_active.png","Images\Save_Training_Data_inactive.png",(),LGrey,LEFT)
+    Active_Button(Delete_Athlete,canvas_Second_Window3,canvas_Second_Window3,"Images\Delete_Training_Data_active.png","Images\Delete_Training_Data_inactive.png",(),LGrey,LEFT)
 
 def quit():
     root.destroy()
