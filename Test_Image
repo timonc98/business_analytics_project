@@ -1,39 +1,306 @@
 from tkinter import *
 from PIL import Image, ImageTk
-
-def on_enter(event):
-    button.config(image=root.Creat_Bild_active,)
-
-def on_leave(event):
-    button.config(image=root.Creat_Bild_inactive,)
-
-def pressed():
-    print('hello')
+from tkinter import ttk
 
 #### Farben
-LGrey = '#1b1b1b'#'#545454'
+LGrey = '#1b1b1b'
 DGrey = '#242424'
 RGrey = '#2e2e2e'
+HGrey = '#545454'
 
+#Wndow Config
 root = Tk()
-#root.title("Bussiness Athletics APP")
-root.geometry("1280x720")
+root.geometry("1180x640")
+root.config(bg=DGrey)
+root.title('Business Athletics')
 
-canvas_main = Canvas(root, bg=LGrey)
-canvas_main.pack(fill=BOTH, expand=TRUE)
+##Clear Frame
+def clear_frame(Frame_Name):
+   for widgets in Frame_Name.winfo_children():
+      widgets.destroy()
 
-####Bilder
-Creat_Bild_active = Image.open("Create_Athlete_active.png")
-Creat_Bild_inactive = Image.open("Create_Athlete_inactive.png")
+#### Active Runder Knopf
+def Active_Button(ButtonName,Canvas_Name,Frame,ImageName_Active,ImageName_Inctive,Commando,Color,ButtonOrder):
+    Creat_Bild_active = Image.open(ImageName_Active)
+    Creat_Bild_inactive = Image.open(ImageName_Inctive)
 
-root.btn_active = ImageTk.PhotoImage(Creat_Bild_active)
-root.btn_inactive = ImageTk.PhotoImage(Creat_Bild_inactive)
+    Creat_Bild_active =  Creat_Bild_active.resize((200, 100))
+    Creat_Bild_inactive =  Creat_Bild_inactive.resize((200, 100))
 
-button = Button(root, image=root.btn_inactive, bg=LGrey, width=400, height=200, bd=0, relief='sunken',activebackground=LGrey, command=pressed)
+    Frame.btn_active = ImageTk.PhotoImage(Creat_Bild_active)
+    Frame.btn_inactive = ImageTk.PhotoImage(Creat_Bild_inactive)
 
-canvas_main.create_window(640,360, window=button)
+    def on_enter(self):
+        ButtonName.config(image=Frame.btn_active)
 
-button.bind("<Enter>", on_enter)
-button.bind("<Leave>", on_leave)
+    def on_leave(event):
+        ButtonName.config(image=Frame.btn_inactive)
+
+   
+    ButtonName.config(image=Frame.btn_inactive, bg=Color, width=200, height=100, bd=0, relief='sunken',activebackground=LGrey, command=Commando)
+
+    Canvas_Name.create_window(100,50, window=ButtonName)
+
+    ButtonName.bind("<Enter>", on_enter)
+    ButtonName.bind("<Leave>", on_leave)
+
+### Button FUnktions
+
+def Create_Athlete_Button():
+    print('Test')
+
+def Delete_Athlete_Button():
+    print('1')
+
+def Change_Athlete_Button():
+    print('1')
+
+def Create_Training_Button():
+    print('1')
+
+def Delete_Training_Button():
+    print('1')
+
+def Change_Training_Button():
+    print('1')
+
+def Save_Training_Data_Button():
+    print('1')
+
+def Delete_Training_Data_Button():
+    print('1')
+
+def Athlete_Window():
+    clear_frame(Second_Fame)
+
+    Second_Window_TOP = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
+    Second_Window_TOP.grid(column=0,row=0,padx=10,pady=5,columnspan = 2)
+
+    Label_Second_Window = Label(Second_Window_TOP,text='Create Athlete',bg=LGrey,fg='White',font=('Calibri', 20))
+    Label_Second_Window.grid(pady = 45,padx=10, columnspan = 2)
+
+    Second_Window_RIGHT = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
+    Second_Window_RIGHT.grid(column=0,row=1,padx=10,pady=5)
+
+    Second_Window_LEFT = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5,highlightbackground=RGrey)
+    Second_Window_LEFT.grid(column=1,row=1,padx=10,pady=5)
+    #### Widgets
+    Label_Athlete_Gender = Label(Second_Window_RIGHT,text='Gender',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Athlete_Gender.grid(column=0,row=0,padx=10,pady=5,sticky='w')
+
+    OPTIONS = ['Male','Femal','Divers']
+    variable = StringVar(Second_Window_RIGHT)
+    variable.set(OPTIONS[0])
+    Athlete_Gender = ttk.OptionMenu(Second_Window_RIGHT,variable, *OPTIONS )
+    Athlete_Gender.grid(column=1,row=0,padx=10,pady=5,sticky='nsew')
+
+    Label_Athlete_Name = Label(Second_Window_RIGHT,text='Name',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Athlete_Name.grid(column=0,row=1,padx=10,pady=5,sticky='w')
+    Text_Athlete_Name = Text(Second_Window_RIGHT, height = 1, width = 20)
+    Text_Athlete_Name.grid(column=1,row=1,padx=10,pady=5,sticky='nsew')
+
+    Label_Athlete_Weight = Label(Second_Window_RIGHT,text='Weight',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Athlete_Weight.grid(column=0,row=2,padx=10,pady=5,sticky='w')
+    Text_Athlete_Weight = Text(Second_Window_RIGHT, height = 1, width = 20)
+    Text_Athlete_Weight.grid(column=1,row=2,padx=10,pady=5,sticky='nsew')
+
+    Label_Athlete_Size = Label(Second_Window_RIGHT,text='Size',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Athlete_Size.grid(column=0,row=3,padx=10,pady=5,sticky='w')
+    Text_Athlete_Size = Text(Second_Window_RIGHT, height = 1, width = 20)
+    Text_Athlete_Size.grid(column=1,row=3,padx=10,pady=5,sticky='nsew')
+
+    Label_Athlete_ID = Label(Second_Window_LEFT,text='ID',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Athlete_ID.grid(column=0,row=0,padx=10,pady=5,sticky='w')
+    Text_Athlete_ID = Text(Second_Window_LEFT, height = 1, width = 20)
+    Text_Athlete_ID.grid(column=1,row=0,padx=10,pady=5,sticky='nsew')
+    
+    Empty_row = Label(Second_Window_LEFT, text='     \n   ', bg=LGrey)
+    Empty_row.grid(column=0, row=2,padx=50,pady=5, )
+    Empty_row = Label(Second_Window_RIGHT, text='     \n   ', bg=LGrey)
+    Empty_row.grid(column=0, row=4,padx=50,pady=5, )
+
+    canvas_Second_Window = Canvas(Second_Window_RIGHT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
+    canvas_Second_Window.grid(row=5,padx=50,pady=5, columnspan = 2,sticky='ew')
+    canvas_Second_Window2 = Canvas(Second_Window_LEFT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
+    canvas_Second_Window2.grid(row=3,padx=50,pady=5, columnspan = 2,sticky='w')
+    canvas_Second_Window3= Canvas(Second_Window_LEFT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
+    canvas_Second_Window3.grid(row=4,padx=50,pady=5, columnspan = 2,sticky='n')
+
+    Create_Athlete = Button(canvas_Second_Window)
+    Create_Athlete.grid(column=0,row=0)
+    Change_Athlete= Button(canvas_Second_Window2)
+    Change_Athlete.grid(column=0,row=0)
+    Delete_Athlete= Button(canvas_Second_Window3)
+    Delete_Athlete.grid(column=0,row=0)
+    
+    Active_Button(Create_Athlete,canvas_Second_Window,canvas_Second_Window,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",Create_Athlete_Button,LGrey,LEFT)
+    Active_Button(Change_Athlete,canvas_Second_Window2,canvas_Second_Window2,"Images\Change_Athlete_active.png","Images\Change_Athlete_inactive.png",Change_Athlete_Button,LGrey,LEFT)
+    Active_Button(Delete_Athlete,canvas_Second_Window3,canvas_Second_Window3,"Images\Delete_Athlete_active.png","Images\Delete_Athlete_inactive.png",Delete_Athlete_Button,LGrey,LEFT)
+
+def Course_Window():
+    clear_frame(Second_Fame)
+
+    Second_Window_TOP = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
+    Second_Window_TOP.grid(column=0,row=0,padx=10,pady=5,columnspan = 2)
+
+    Label_Second_Window = Label(Second_Window_TOP,text='Create Training',bg=LGrey,fg='White',font=('Calibri', 20))
+    Label_Second_Window.grid(pady = 45,padx=10, columnspan = 2)
+
+    Second_Window_RIGHT = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
+    Second_Window_RIGHT.grid(column=0,row=1,padx=10,pady=5)
+
+    Second_Window_LEFT = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5,highlightbackground=RGrey)
+    Second_Window_LEFT.grid(column=1,row=1,padx=10,pady=5)
+
+    #### Widgets
+
+    Label_Course_Designation = Label(Second_Window_RIGHT,text='Designation',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Course_Designation.grid(column=0,row=0,padx=10,pady=5,sticky='w')
+    Text_Course_Designation = Text(Second_Window_RIGHT, height = 1, width = 20)
+    Text_Course_Designation.grid(column=1,row=0,padx=10,pady=5,sticky='nsew')
+
+    Label_Course_Description = Label(Second_Window_RIGHT,text='Description',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Course_Description.grid(column=0,row=1,padx=10,pady=5,sticky='w')
+    Text_Course_Description = Text(Second_Window_RIGHT, height = 5, width = 20)
+    Text_Course_Description.grid(column=1,row=1,padx=10,pady=5,sticky='nsew')
+
+    Label_Course_TNr = Label(Second_Window_LEFT,text='TNr',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Course_TNr.grid(column=0,row=0,padx=10,pady=5,sticky='w')
+    Text_Course_TNr = Text(Second_Window_LEFT, height = 1, width = 20)
+    Text_Course_TNr.grid(column=1,row=0,padx=10,pady=5,sticky='nsew')
+    
+    Empty_row = Label(Second_Window_LEFT, text='     \n   ', bg=LGrey)
+    Empty_row.grid(column=0, row=1,padx=50,pady=5)
+    Empty_row = Label(Second_Window_RIGHT, text='     \n   ', bg=LGrey)
+    Empty_row.grid(column=0, row=2,padx=50,pady=5)
+
+    canvas_Second_Window = Canvas(Second_Window_RIGHT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
+    canvas_Second_Window.grid(row=5,padx=50,pady=5, columnspan = 2,sticky='ew')
+    canvas_Second_Window2 = Canvas(Second_Window_LEFT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
+    canvas_Second_Window2.grid(row=3,padx=50,pady=5, columnspan = 2,sticky='w')
+    canvas_Second_Window3= Canvas(Second_Window_LEFT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
+    canvas_Second_Window3.grid(row=4,padx=50,pady=5, columnspan = 2,sticky='n')
+
+    Create_Training = Button(canvas_Second_Window)
+    Create_Training.grid(column=0,row=0)
+    Change_Traning= Button(canvas_Second_Window2)
+    Change_Traning.grid(column=0,row=0)
+    Delete_Training= Button(canvas_Second_Window3)
+    Delete_Training.grid(column=0,row=0)
+    
+    Active_Button(Create_Training,canvas_Second_Window,canvas_Second_Window,"Images\Create_Course_active.png","Images\Create_Course_inactive.png",Create_Training_Button,LGrey,LEFT)
+    Active_Button(Change_Traning,canvas_Second_Window2,canvas_Second_Window2,"Images\Change_Training_active.png","Images\Change_Training_inactive.png",Change_Training_Button,LGrey,LEFT)
+    Active_Button(Delete_Training,canvas_Second_Window3,canvas_Second_Window3,"Images\Delete_Training_active.png","Images\Delete_Training_inactive.png",Delete_Training_Button,LGrey,LEFT)
+
+
+def Enter_Training_Window():
+    clear_frame(Second_Fame)
+
+    Second_Window_TOP = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
+    Second_Window_TOP.grid(column=0,row=0,padx=10,pady=5,columnspan = 2)
+
+    Label_Second_Window = Label(Second_Window_TOP,text='Enter Trainings Data',bg=LGrey,fg='White',font=('Calibri', 20))
+    Label_Second_Window.grid(pady = 45,padx=10, columnspan = 2)
+
+    Second_Window_RIGHT = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
+    Second_Window_RIGHT.grid(column=0,row=1,padx=10,pady=5)
+
+    Second_Window_LEFT = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5,highlightbackground=RGrey)
+    Second_Window_LEFT.grid(column=1,row=1,padx=10,pady=5)
+
+    #### Widgets
+
+    Label_Athlete_Gender = Label(Second_Window_RIGHT,text='Athlete ID',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Athlete_Gender.grid(column=0,row=0,padx=10,pady=5,sticky='w')
+    Text_Athlete_ID = Text(Second_Window_RIGHT, height = 1, width = 20)
+    Text_Athlete_ID.grid(column=1,row=1,padx=10,pady=5,sticky='nsew')
+
+    Label_Traning_Date = Label(Second_Window_RIGHT,text='Date',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Traning_Date.grid(column=0,row=1,padx=10,pady=5,sticky='w')
+    Text_Traning_Date = Text(Second_Window_RIGHT, height = 1, width = 20)
+    Text_Traning_Date.grid(column=1,row=1,padx=10,pady=5,sticky='nsew')
+
+    Label_Training_Start = Label(Second_Window_RIGHT,text='Start Time',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Training_Start.grid(column=0,row=2,padx=10,pady=5,sticky='w')
+    Text_Training_Start = Text(Second_Window_RIGHT, height = 1, width = 20)
+    Text_Training_Start.grid(column=1,row=2,padx=10,pady=5,sticky='nsew')
+
+    Label_Training_Start = Label(Second_Window_RIGHT,text='End Time',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Training_Start.grid(column=0,row=3,padx=10,pady=5,sticky='w')
+    Text_Training_Start = Text(Second_Window_RIGHT, height = 1, width = 20)
+    Text_Training_Start.grid(column=1,row=3,padx=10,pady=5,sticky='nsew')
+
+    Label_Course_TNr = Label(Second_Window_LEFT,text='Course (TNr)',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Course_TNr.grid(column=0,row=0,padx=10,pady=5,sticky='w')
+    Text_Course_TNr = Text(Second_Window_LEFT, height = 1, width = 20)
+    Text_Course_TNr.grid(column=1,row=0,padx=10,pady=5,sticky='nsew')
+    
+    Empty_row = Label(Second_Window_LEFT, text='     \n   ', bg=LGrey)
+    Empty_row.grid(column=0, row=2,padx=50,pady=5, )
+    Empty_row = Label(Second_Window_RIGHT, text='     \n   ', bg=LGrey)
+    Empty_row.grid(column=0, row=4,padx=50,pady=5, )
+
+    
+    canvas_Second_Window2 = Canvas(Second_Window_LEFT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
+    canvas_Second_Window2.grid(row=3,padx=50,pady=5, columnspan = 2,sticky='n')
+    canvas_Second_Window3= Canvas(Second_Window_LEFT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
+    canvas_Second_Window3.grid(row=4,padx=50,pady=5, columnspan = 2,sticky='n')
+
+    Change_Athlete= Button(canvas_Second_Window2)
+    Change_Athlete.grid(column=0,row=0)
+    Delete_Athlete= Button(canvas_Second_Window3)
+    Delete_Athlete.grid(column=0,row=0)
+    
+    Active_Button(Change_Athlete,canvas_Second_Window2,canvas_Second_Window2,"Images\Save_Training_Data_active.png","Images\Save_Training_Data_inactive.png",Save_Training_Data_Button,LGrey,LEFT)
+    Active_Button(Delete_Athlete,canvas_Second_Window3,canvas_Second_Window3,"Images\Delete_Training_Data_active.png","Images\Delete_Training_Data_inactive.png",Delete_Training_Data_Button,LGrey,LEFT)
+
+def quit():
+    root.destroy()
+
+### Main
+
+Main_frame = Frame(root,width=300,height=500,bg=LGrey,bd=5, highlightbackground='white')
+Main_frame.grid(column=0,row=0,padx=10,pady=5)
+
+Second_Fame = Frame(root,width=678,height=500,bg=LGrey,bd=5,highlightbackground=RGrey)
+Second_Fame.grid(column=1,row=0,padx=10,pady=5,sticky='nsew')
+
+### Start Fenster
+Label_Main = Label(Main_frame,text='Training Management',bg=LGrey,fg='White',pady = 50,font=('Calibri', 20))
+Label_Main.grid(column=0,row=0,padx=10,pady=5)
+
+canvas_main = Canvas(Main_frame,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
+canvas_main.grid(column=0,row=1,padx=10,pady=5)
+
+canvas_main2 = Canvas(Main_frame,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
+canvas_main2.grid(column=0,row=2,padx=10,pady=5)
+
+canvas_main3 = Canvas(Main_frame,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
+canvas_main3.grid(column=0,row=3,padx=10,pady=5)
+
+canvas_main4 = Canvas(Main_frame,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
+canvas_main4.grid(column=0,row=4,padx=10,pady=5)
+
+Button1 = Button(canvas_main)
+Button1.grid(column=0,row=0)
+
+Button2 = Button(canvas_main2)
+Button2.grid(column=0,row=0)
+
+Button3 = Button(canvas_main3)
+Button3.grid(column=0,row=0)
+
+Button4 = Button(canvas_main4)
+Button4.grid(column=0,row=0)
+
+## Create Athlete
+Active_Button(Button1,canvas_main,canvas_main,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",Athlete_Window,LGrey,LEFT)
+## Create Course
+Active_Button(Button2,canvas_main2,canvas_main2,"Images\Create_Course_active.png","Images\Create_Course_inactive.png",Course_Window,LGrey,LEFT)
+##Enter Training Data
+Active_Button(Button3,canvas_main3,canvas_main3,"Images\Enter_Trainings_Data_active.png","Images\Enter_Trainings_Data_inactive.png",Enter_Training_Window,LGrey,LEFT)
+## Quite
+Active_Button(Button4,canvas_main4,canvas_main4,"Images\Quit_active.png","Images\Quit_inactive.png",quit,LGrey,LEFT)
+
 
 root.mainloop()
