@@ -47,7 +47,7 @@ def Active_Button(ButtonName,Canvas_Name,Frame,ImageName_Active,ImageName_Inctiv
 ### Button FUnktions
 
 def Create_Athlete_Button():
-    print('1')
+    print('Test')
 
 def Delete_Athlete_Button():
     print('1')
