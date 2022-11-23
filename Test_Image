@@ -1,6 +1,7 @@
 from tkinter import *
 from PIL import Image, ImageTk
 from tkinter import ttk
+import psycopg2
 
 #### Farben
 LGrey = '#1b1b1b'
@@ -44,10 +45,33 @@ def Active_Button(ButtonName,Canvas_Name,Frame,ImageName_Active,ImageName_Inctiv
     ButtonName.bind("<Enter>", on_enter)
     ButtonName.bind("<Leave>", on_leave)
 
+### Database
+con = psycopg2.connect(database="postgres", user="postgres", password="Lukasso007", host="127.0.0.1", port="5432")
+
+print("Database opened successfully")
+
+#CREATE TABLE ATHELTE
+cur = con.cursor()
+
+cur.execute('''CREATE TABLE IF NOT EXISTS ATHLETE 
+      (Text_Athlete_Name TEXT       NOT NULL,
+      Text_Athlete_Weight      INT    NOT NULL  );''')
+print("Table created successfully")
+
+#### Create Funktion
+
+# Information List
+athletes = []
+
+# Add Information
+def add():
+    cur.execute("INSERT INTO ATHLETE (Text_Athlete_Name,Text_Athlete_Weight) VALUES (%s,%s)",(Text_Athlete_Name.get("1.0",END), Text_Athlete_Weight.get("1.0",END)))
+    con.commit()
+
 ### Button FUnktions
 
 def Create_Athlete_Button():
-    print('Test')
+    add()
 
 def Delete_Athlete_Button():
     print('1')
@@ -68,10 +92,12 @@ def Save_Training_Data_Button():
     print('1')
 
 def Delete_Training_Data_Button():
-    print('1')
+    print(Text_Athlete_ID.get(Text_Athlete_ID))
 
 def Athlete_Window():
     clear_frame(Second_Fame)
+
+    global Text_Athlete_Name, Text_Athlete_Weight, Text_Athlete_ID
 
     Second_Window_TOP = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
     Second_Window_TOP.grid(column=0,row=0,padx=10,pady=5,columnspan = 2)
@@ -195,6 +221,8 @@ def Course_Window():
 
 def Enter_Training_Window():
     clear_frame(Second_Fame)
+    
+    global Text_Athlete_ID
 
     Second_Window_TOP = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
     Second_Window_TOP.grid(column=0,row=0,padx=10,pady=5,columnspan = 2)
@@ -253,7 +281,7 @@ def Enter_Training_Window():
     
     Active_Button(Change_Athlete,canvas_Second_Window2,canvas_Second_Window2,"Images\Save_Training_Data_active.png","Images\Save_Training_Data_inactive.png",Save_Training_Data_Button,LGrey,LEFT)
     Active_Button(Delete_Athlete,canvas_Second_Window3,canvas_Second_Window3,"Images\Delete_Training_Data_active.png","Images\Delete_Training_Data_inactive.png",Delete_Training_Data_Button,LGrey,LEFT)
-
+    
 def quit():
     root.destroy()
 
