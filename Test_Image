@@ -54,8 +54,24 @@ print("Database opened successfully")
 cur = con.cursor()
 
 cur.execute('''CREATE TABLE IF NOT EXISTS ATHLETE 
-      (Text_Athlete_Name TEXT       NOT NULL,
-      Text_Athlete_Weight      INT    NOT NULL  );''')
+      (Gender_variable  TEXT     NOT NULL,
+      Text_Athlete_Name TEXT       NOT NULL,
+      Text_Athlete_Weight      INT    NOT NULL,
+      Text_Athlete_Size INT NOT NULL,
+      Text_Athlete_ID INT PRIMARY KEY);''')
+
+cur.execute('''CREATE TABLE IF NOT EXISTS TRAINING 
+      (Text_Course_Designation TEXT NOT NULL,
+      Text_Course_Description TEXT       NOT NULL,
+      Text_Course_TNr      INT    PRIMARY KEY);''')
+
+cur.execute('''CREATE TABLE IF NOT EXISTS TRAINING_DATA 
+      (Text_Athlete_ID INT PRIMARY KEY,
+      Text_Traning_Date TEXT       NOT NULL,
+      Text_Training_Start      INT    NOT NULL,
+      Text_Training_END INT NOT NULL,
+      Text_Course_TNr INT NOT NULL);''')
+
 print("Table created successfully")
 
 #### Create Funktion
@@ -64,20 +80,59 @@ print("Table created successfully")
 athletes = []
 
 # Add Information
-def add():
-    cur.execute("INSERT INTO ATHLETE (Text_Athlete_Name,Text_Athlete_Weight) VALUES (%s,%s)",(Text_Athlete_Name.get("1.0",END), Text_Athlete_Weight.get("1.0",END)))
+def add_Athlete():
+    cur.execute("INSERT INTO ATHLETE (Gender_variable,Text_Athlete_Name,Text_Athlete_Weight,Text_Athlete_Size,Text_Athlete_ID) VALUES (%s,%s,%s,%s,%s)"
+    ,(Gender_variable.get(),Text_Athlete_Name.get("1.0",END), Text_Athlete_Weight.get("1.0",END),Text_Athlete_Size.get("1.0",END),Text_Athlete_ID.get("1.0",END)))
     con.commit()
 
+def Delete_Athlete():
+    cur.execute("Delete INTO ATHLETE")
+    con.commit()
+
+def Change_Athlete():
+    record_id = Text_Athlete_ID.get("1.0",END)
+
+    cur.execute("SELECT * FROM ATHLETE WHERE text_athlete_id=" + record_id)
+    #records = cur.fetchall()
+
+    cur.execute("Update ATHLETE set gender_variable='%s' , text_Athlete_Name='%s' , text_Athlete_Weight='%s' , text_Athlete_Size='%s' where text_athlete_id='%s'" 
+                %(Gender_variable.get(),Text_Athlete_Name.get("1.0",END),Text_Athlete_Weight.get("1.0",END),Text_Athlete_Size.get("1.0",END),record_id))
+    
+    con.commit()
+    
 ### Button FUnktions
+def Aktuallisieren():
+    record_id = Text_Athlete_ID.get("1.0",END)
+    cur.execute("SELECT * FROM ATHLETE WHERE text_athlete_id=" + record_id)
+    records = cur.fetchall()
+    print(records[0][0])
+
+    if (records[0][0]) == 'Male':
+        Gender_variable.set(OPTIONS[0])
+    elif (records[0][0]) == 'Female':
+        Gender_variable.set(OPTIONS[1])
+    else:
+        Gender_variable.set(OPTIONS[2])
+
+    Text_Athlete_Name.delete("1.0",END)
+    Text_Athlete_Name.insert("1.0",records[0][1])
+    Text_Athlete_Weight.delete("1.0",END)
+    Text_Athlete_Weight.insert("1.0",records[0][2])
+    Text_Athlete_Size.delete("1.0",END)
+    Text_Athlete_Size.insert("1.0",records[0][3])
+
+def focus_next_widget(event):
+    event.widget.tk_focusNext().focus()
+    return("break")
 
 def Create_Athlete_Button():
-    add()
+    add_Athlete()
 
 def Delete_Athlete_Button():
-    print('1')
+    Delete_Athlete()
 
 def Change_Athlete_Button():
-    print('1')
+    Change_Athlete()
 
 def Create_Training_Button():
     print('1')
@@ -97,7 +152,8 @@ def Delete_Training_Data_Button():
 def Athlete_Window():
     clear_frame(Second_Fame)
 
-    global Text_Athlete_Name, Text_Athlete_Weight, Text_Athlete_ID
+    global Gender_variable,Athlete_Gender,Text_Athlete_Name, Text_Athlete_Weight, Text_Athlete_Size, Text_Athlete_ID, OPTIONS
+
 
     Second_Window_TOP = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
     Second_Window_TOP.grid(column=0,row=0,padx=10,pady=5,columnspan = 2)
@@ -110,36 +166,45 @@ def Athlete_Window():
 
     Second_Window_LEFT = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5,highlightbackground=RGrey)
     Second_Window_LEFT.grid(column=1,row=1,padx=10,pady=5)
+
     #### Widgets
     Label_Athlete_Gender = Label(Second_Window_RIGHT,text='Gender',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
     Label_Athlete_Gender.grid(column=0,row=0,padx=10,pady=5,sticky='w')
-
-    OPTIONS = ['Male','Femal','Divers']
-    variable = StringVar(Second_Window_RIGHT)
-    variable.set(OPTIONS[0])
-    Athlete_Gender = ttk.OptionMenu(Second_Window_RIGHT,variable, *OPTIONS )
+    
+    OPTIONS = ['Male','Female','Divers']
+    Gender_variable = StringVar(Second_Window_RIGHT)
+    Gender_variable.set(OPTIONS[0])
+    Athlete_Gender = ttk.OptionMenu(Second_Window_RIGHT,Gender_variable, *OPTIONS )
     Athlete_Gender.grid(column=1,row=0,padx=10,pady=5,sticky='nsew')
+   
 
     Label_Athlete_Name = Label(Second_Window_RIGHT,text='Name',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
     Label_Athlete_Name.grid(column=0,row=1,padx=10,pady=5,sticky='w')
     Text_Athlete_Name = Text(Second_Window_RIGHT, height = 1, width = 20)
     Text_Athlete_Name.grid(column=1,row=1,padx=10,pady=5,sticky='nsew')
+    Text_Athlete_Name.bind("<Tab>", focus_next_widget)
 
     Label_Athlete_Weight = Label(Second_Window_RIGHT,text='Weight',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
     Label_Athlete_Weight.grid(column=0,row=2,padx=10,pady=5,sticky='w')
     Text_Athlete_Weight = Text(Second_Window_RIGHT, height = 1, width = 20)
     Text_Athlete_Weight.grid(column=1,row=2,padx=10,pady=5,sticky='nsew')
+    Text_Athlete_Weight.bind("<Tab>", focus_next_widget)
 
     Label_Athlete_Size = Label(Second_Window_RIGHT,text='Size',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
     Label_Athlete_Size.grid(column=0,row=3,padx=10,pady=5,sticky='w')
     Text_Athlete_Size = Text(Second_Window_RIGHT, height = 1, width = 20)
     Text_Athlete_Size.grid(column=1,row=3,padx=10,pady=5,sticky='nsew')
+    Text_Athlete_Size.bind("<Tab>", focus_next_widget)
 
     Label_Athlete_ID = Label(Second_Window_LEFT,text='ID',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
     Label_Athlete_ID.grid(column=0,row=0,padx=10,pady=5,sticky='w')
     Text_Athlete_ID = Text(Second_Window_LEFT, height = 1, width = 20)
     Text_Athlete_ID.grid(column=1,row=0,padx=10,pady=5,sticky='nsew')
-    
+    Text_Athlete_ID.bind("<Tab>", focus_next_widget)
+
+    Aktuallisieren_Buttion = Button(Second_Window_LEFT,text='Aktuallisieren',command=Aktuallisieren)
+    Aktuallisieren_Buttion.grid(column=2, row=0,padx=5,pady=5)
+
     Empty_row = Label(Second_Window_LEFT, text='     \n   ', bg=LGrey)
     Empty_row.grid(column=0, row=2,padx=50,pady=5, )
     Empty_row = Label(Second_Window_RIGHT, text='     \n   ', bg=LGrey)
@@ -166,6 +231,8 @@ def Athlete_Window():
 def Course_Window():
     clear_frame(Second_Fame)
 
+    global Text_Course_Designation,Text_Course_Description,Text_Course_TNr
+    
     Second_Window_TOP = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
     Second_Window_TOP.grid(column=0,row=0,padx=10,pady=5,columnspan = 2)
 
@@ -184,17 +251,20 @@ def Course_Window():
     Label_Course_Designation.grid(column=0,row=0,padx=10,pady=5,sticky='w')
     Text_Course_Designation = Text(Second_Window_RIGHT, height = 1, width = 20)
     Text_Course_Designation.grid(column=1,row=0,padx=10,pady=5,sticky='nsew')
+    Text_Course_Designation.bind("<Tab>", focus_next_widget)
 
     Label_Course_Description = Label(Second_Window_RIGHT,text='Description',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
     Label_Course_Description.grid(column=0,row=1,padx=10,pady=5,sticky='w')
     Text_Course_Description = Text(Second_Window_RIGHT, height = 5, width = 20)
     Text_Course_Description.grid(column=1,row=1,padx=10,pady=5,sticky='nsew')
+    Text_Course_Description.bind("<Tab>", focus_next_widget)
 
     Label_Course_TNr = Label(Second_Window_LEFT,text='TNr',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
     Label_Course_TNr.grid(column=0,row=0,padx=10,pady=5,sticky='w')
     Text_Course_TNr = Text(Second_Window_LEFT, height = 1, width = 20)
     Text_Course_TNr.grid(column=1,row=0,padx=10,pady=5,sticky='nsew')
-    
+    Text_Course_TNr.bind("<Tab>", focus_next_widget)
+
     Empty_row = Label(Second_Window_LEFT, text='     \n   ', bg=LGrey)
     Empty_row.grid(column=0, row=1,padx=50,pady=5)
     Empty_row = Label(Second_Window_RIGHT, text='     \n   ', bg=LGrey)
@@ -222,7 +292,7 @@ def Course_Window():
 def Enter_Training_Window():
     clear_frame(Second_Fame)
     
-    global Text_Athlete_ID
+    global Text_Athlete_ID,Text_Traning_Date,Text_Training_Start,Text_Training_END,Text_Course_TNr
 
     Second_Window_TOP = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
     Second_Window_TOP.grid(column=0,row=0,padx=10,pady=5,columnspan = 2)
@@ -242,27 +312,32 @@ def Enter_Training_Window():
     Label_Athlete_Gender.grid(column=0,row=0,padx=10,pady=5,sticky='w')
     Text_Athlete_ID = Text(Second_Window_RIGHT, height = 1, width = 20)
     Text_Athlete_ID.grid(column=1,row=1,padx=10,pady=5,sticky='nsew')
+    Text_Athlete_ID.bind("<Tab>", focus_next_widget)
 
     Label_Traning_Date = Label(Second_Window_RIGHT,text='Date',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
     Label_Traning_Date.grid(column=0,row=1,padx=10,pady=5,sticky='w')
     Text_Traning_Date = Text(Second_Window_RIGHT, height = 1, width = 20)
     Text_Traning_Date.grid(column=1,row=1,padx=10,pady=5,sticky='nsew')
+    Text_Traning_Date.bind("<Tab>", focus_next_widget)
 
     Label_Training_Start = Label(Second_Window_RIGHT,text='Start Time',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
     Label_Training_Start.grid(column=0,row=2,padx=10,pady=5,sticky='w')
     Text_Training_Start = Text(Second_Window_RIGHT, height = 1, width = 20)
     Text_Training_Start.grid(column=1,row=2,padx=10,pady=5,sticky='nsew')
+    Text_Training_Start.bind("<Tab>", focus_next_widget)
 
-    Label_Training_Start = Label(Second_Window_RIGHT,text='End Time',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
-    Label_Training_Start.grid(column=0,row=3,padx=10,pady=5,sticky='w')
-    Text_Training_Start = Text(Second_Window_RIGHT, height = 1, width = 20)
-    Text_Training_Start.grid(column=1,row=3,padx=10,pady=5,sticky='nsew')
+    Label_Training_END = Label(Second_Window_RIGHT,text='End Time',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Training_END.grid(column=0,row=3,padx=10,pady=5,sticky='w')
+    Text_Training_END = Text(Second_Window_RIGHT, height = 1, width = 20)
+    Text_Training_END.grid(column=1,row=3,padx=10,pady=5,sticky='nsew')
+    Text_Training_END.bind("<Tab>", focus_next_widget)
 
     Label_Course_TNr = Label(Second_Window_LEFT,text='Course (TNr)',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
     Label_Course_TNr.grid(column=0,row=0,padx=10,pady=5,sticky='w')
     Text_Course_TNr = Text(Second_Window_LEFT, height = 1, width = 20)
     Text_Course_TNr.grid(column=1,row=0,padx=10,pady=5,sticky='nsew')
-    
+    Text_Course_TNr.bind("<Tab>", focus_next_widget)
+
     Empty_row = Label(Second_Window_LEFT, text='     \n   ', bg=LGrey)
     Empty_row.grid(column=0, row=2,padx=50,pady=5, )
     Empty_row = Label(Second_Window_RIGHT, text='     \n   ', bg=LGrey)
