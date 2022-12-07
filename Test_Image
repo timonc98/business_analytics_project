@@ -54,7 +54,7 @@ print("Database opened successfully")
 cur = con.cursor()
 
 cur.execute('''CREATE TABLE IF NOT EXISTS ATHLETE 
-      (Gender_variable TEXT NOT NULL,
+      (Gender_variable  TEXT     NOT NULL,
       Text_Athlete_Name TEXT       NOT NULL,
       Text_Athlete_Weight      INT    NOT NULL,
       Text_Athlete_Size INT NOT NULL,
@@ -92,25 +92,34 @@ def Delete_Athlete():
 def Change_Athlete():
     record_id = Text_Athlete_ID.get("1.0",END)
 
-    cur.execute("""UPDATE ATHLETE SET 
-    gender = :gender,
-    athlete_name = :athlete_name,
-    weight = :weight,
-    size = :size
+    cur.execute("SELECT * FROM ATHLETE WHERE text_athlete_id=" + record_id)
+    #records = cur.fetchall()
 
-    WHERE oid = :oid""",
-    {
-    'gender': Gender_variable.get("1.0",END),
-    'athlete_name': Text_Athlete_Name.get("1.0",END),
-    'weight': Text_Athlete_Weight.get("1.0",END),
-    'size': Text_Athlete_Size.get("1.0",END),
+    cur.execute("Update ATHLETE set gender_variable='%s' , text_Athlete_Name='%s' , text_Athlete_Weight='%s' , text_Athlete_Size='%s' where text_athlete_id='%s'" 
+                %(Gender_variable.get(),Text_Athlete_Name.get("1.0",END),Text_Athlete_Weight.get("1.0",END),Text_Athlete_Size.get("1.0",END),record_id))
     
-    'oid': record_id
-    })
-     
-     
+    con.commit()
     
 ### Button FUnktions
+def Aktuallisieren():
+    record_id = Text_Athlete_ID.get("1.0",END)
+    cur.execute("SELECT * FROM ATHLETE WHERE text_athlete_id=" + record_id)
+    records = cur.fetchall()
+    print(records[0][0])
+
+    if (records[0][0]) == 'Male':
+        Gender_variable.set(OPTIONS[0])
+    elif (records[0][0]) == 'Female':
+        Gender_variable.set(OPTIONS[1])
+    else:
+        Gender_variable.set(OPTIONS[2])
+
+    Text_Athlete_Name.delete("1.0",END)
+    Text_Athlete_Name.insert("1.0",records[0][1])
+    Text_Athlete_Weight.delete("1.0",END)
+    Text_Athlete_Weight.insert("1.0",records[0][2])
+    Text_Athlete_Size.delete("1.0",END)
+    Text_Athlete_Size.insert("1.0",records[0][3])
 
 def focus_next_widget(event):
     event.widget.tk_focusNext().focus()
@@ -143,7 +152,7 @@ def Delete_Training_Data_Button():
 def Athlete_Window():
     clear_frame(Second_Fame)
 
-    global Gender_variable,Athlete_Gender,Text_Athlete_Name, Text_Athlete_Weight, Text_Athlete_Size, Text_Athlete_ID
+    global Gender_variable,Athlete_Gender,Text_Athlete_Name, Text_Athlete_Weight, Text_Athlete_Size, Text_Athlete_ID, OPTIONS
 
 
     Second_Window_TOP = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
@@ -157,11 +166,12 @@ def Athlete_Window():
 
     Second_Window_LEFT = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5,highlightbackground=RGrey)
     Second_Window_LEFT.grid(column=1,row=1,padx=10,pady=5)
+
     #### Widgets
     Label_Athlete_Gender = Label(Second_Window_RIGHT,text='Gender',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
     Label_Athlete_Gender.grid(column=0,row=0,padx=10,pady=5,sticky='w')
     
-    OPTIONS = ['Male','Femal','Divers']
+    OPTIONS = ['Male','Female','Divers']
     Gender_variable = StringVar(Second_Window_RIGHT)
     Gender_variable.set(OPTIONS[0])
     Athlete_Gender = ttk.OptionMenu(Second_Window_RIGHT,Gender_variable, *OPTIONS )
@@ -191,6 +201,9 @@ def Athlete_Window():
     Text_Athlete_ID = Text(Second_Window_LEFT, height = 1, width = 20)
     Text_Athlete_ID.grid(column=1,row=0,padx=10,pady=5,sticky='nsew')
     Text_Athlete_ID.bind("<Tab>", focus_next_widget)
+
+    Aktuallisieren_Buttion = Button(Second_Window_LEFT,text='Aktuallisieren',command=Aktuallisieren)
+    Aktuallisieren_Buttion.grid(column=2, row=0,padx=5,pady=5)
 
     Empty_row = Label(Second_Window_LEFT, text='     \n   ', bg=LGrey)
     Empty_row.grid(column=0, row=2,padx=50,pady=5, )
