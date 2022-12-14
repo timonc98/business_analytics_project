@@ -58,20 +58,20 @@ cur.execute('''CREATE TABLE IF NOT EXISTS ATHLETE
       Text_Athlete_Name TEXT       NOT NULL,
       Text_Athlete_Weight      INT    NOT NULL,
       Text_Athlete_Size INT NOT NULL,
-      Text_Athlete_ID INT PRIMARY KEY);''')
+      ID_variable SERIAL PRIMARY KEY);''')
 
-cur.execute('''CREATE TABLE IF NOT EXISTS TRAINING 
-      (Text_Course_Designation TEXT NOT NULL,
-      Text_Course_Description TEXT       NOT NULL,
-      Text_Course_TNr      INT    PRIMARY KEY);''')
+# cur.execute('''CREATE TABLE IF NOT EXISTS TRAINING 
+#       (Text_Course_Designation TEXT NOT NULL,
+#       Text_Course_Description TEXT       NOT NULL,
+#       Text_Course_TNr      INT    PRIMARY KEY);''')
 
-cur.execute('''CREATE TABLE IF NOT EXISTS TRAINING_DATA 
-      (Text_Athlete_ID INT PRIMARY KEY,
-      Text_Traning_Date TEXT       NOT NULL,
-      Text_Training_Start      INT    NOT NULL,
-      Text_Training_END INT NOT NULL,
-      Text_Course_TNr INT NOT NULL);''')
-
+# cur.execute('''CREATE TABLE IF NOT EXISTS TRAINING_DATA 
+#       (Text_Athlete_ID INT PRIMARY KEY,
+#       Text_Traning_Date TEXT       NOT NULL,
+#       Text_Training_Start      INT    NOT NULL,
+#       Text_Training_END INT NOT NULL,
+#       Text_Course_TNr INT NOT NULL);''')
+con.commit()
 print("Table created successfully")
 
 #### Create Funktion
@@ -80,39 +80,74 @@ print("Table created successfully")
 athletes = []
 
 # Add Information
+def Id_Drop_Aktu():
+    cur.execute("SELECT id_variable FROM ATHLETE ")
+    ALL_ID = cur.fetchall()
+    OPTIONS_ID = ['']
+
+    for PID in ALL_ID:
+        OPTIONS_ID.append(PID[0])
+    print(OPTIONS_ID)
+    return OPTIONS_ID
+    #Gender_variable.set(OPTIONS_ID[1])
+
+
+
 def add_Athlete():
-    cur.execute("INSERT INTO ATHLETE (Gender_variable,Text_Athlete_Name,Text_Athlete_Weight,Text_Athlete_Size,Text_Athlete_ID) VALUES (%s,%s,%s,%s,%s)"
-    ,(Gender_variable.get(),Text_Athlete_Name.get("1.0",END), Text_Athlete_Weight.get("1.0",END),Text_Athlete_Size.get("1.0",END),Text_Athlete_ID.get("1.0",END)))
+    cur.execute("INSERT INTO ATHLETE (Gender_variable,Text_Athlete_Name,Text_Athlete_Weight,Text_Athlete_Size) VALUES (%s,%s,%s,%s)"
+    ,(Gender_variable.get(),Text_Athlete_Name.get("1.0",END), Text_Athlete_Weight.get("1.0",END),Text_Athlete_Size.get("1.0",END)))
     con.commit()
+    OPTIONS_ID = Id_Drop_Aktu()
+    Text_Athlete_ID["menu"].delete(0,"end")
+    for PIDD in OPTIONS_ID:
+        Text_Athlete_ID["menu"].add_command(label=PIDD, command=lambda value=PIDD: ID_variable.set(value))
+
+    ID_variable.set(OPTIONS_ID[len(OPTIONS_ID)-1])
+    Aktualisieren('')
 
 def Delete_Athlete():
-    cur.execute("Delete INTO ATHLETE")
+    record_id = ID_variable.get()
+
+    cur.execute("DELETE FROM  ATHLETE WHERE id_variable='%s'" %(record_id))
     con.commit()
 
-def Change_Athlete():
-    record_id = Text_Athlete_ID.get("1.0",END)
+    Text_Athlete_Name.delete("1.0",END)
+    Text_Athlete_Weight.delete("1.0",END)
+    Text_Athlete_Size.delete("1.0",END)
+    OPTIONS_ID = Id_Drop_Aktu()
+    Text_Athlete_ID["menu"].delete(0,"end")
 
-    cur.execute("SELECT * FROM ATHLETE WHERE text_athlete_id=" + record_id)
+
+    for PIDD in OPTIONS_ID:
+        Text_Athlete_ID["menu"].add_command(label=PIDD, command=lambda value=PIDD: ID_variable.set(value))
+    
+    ID_variable.set(OPTIONS_ID[len(OPTIONS_ID)-1])
+    Aktualisieren('')
+
+def Change_Athlete():
+    record_id = ID_variable.get()
+
+    cur.execute("SELECT * FROM ATHLETE WHERE id_variable=" + record_id)
     #records = cur.fetchall()
 
-    cur.execute("Update ATHLETE set gender_variable='%s' , text_Athlete_Name='%s' , text_Athlete_Weight='%s' , text_Athlete_Size='%s' where text_athlete_id='%s'" 
+    cur.execute("Update ATHLETE set gender_variable='%s' , text_Athlete_Name='%s' , text_Athlete_Weight='%s' , text_Athlete_Size='%s' where ID_variable='%s'" 
                 %(Gender_variable.get(),Text_Athlete_Name.get("1.0",END),Text_Athlete_Weight.get("1.0",END),Text_Athlete_Size.get("1.0",END),record_id))
     
     con.commit()
     
 ### Button FUnktions
-def Aktuallisieren():
-    record_id = Text_Athlete_ID.get("1.0",END)
-    cur.execute("SELECT * FROM ATHLETE WHERE text_athlete_id=" + record_id)
+def Aktualisieren(*args):
+    record_id = ID_variable.get()
+    cur.execute("SELECT * FROM ATHLETE WHERE ID_variable=" + record_id)
     records = cur.fetchall()
-    print(records[0][0])
+    print('Würde Aktualisieren')
 
     if (records[0][0]) == 'Male':
-        Gender_variable.set(OPTIONS[0])
-    elif (records[0][0]) == 'Female':
         Gender_variable.set(OPTIONS[1])
-    else:
+    elif (records[0][0]) == 'Female':
         Gender_variable.set(OPTIONS[2])
+    else:
+        Gender_variable.set(OPTIONS[3])
 
     Text_Athlete_Name.delete("1.0",END)
     Text_Athlete_Name.insert("1.0",records[0][1])
@@ -151,9 +186,9 @@ def Delete_Training_Data_Button():
 
 def Athlete_Window():
     clear_frame(Second_Fame)
-
-    global Gender_variable,Athlete_Gender,Text_Athlete_Name, Text_Athlete_Weight, Text_Athlete_Size, Text_Athlete_ID, OPTIONS
-
+    
+    global Gender_variable,Text_Athlete_Name, Text_Athlete_Weight, Text_Athlete_Size, OPTIONS, OPTIONS_ID, ID_variable, Text_Athlete_ID
+    OPTIONS_ID = Id_Drop_Aktu()
 
     Second_Window_TOP = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
     Second_Window_TOP.grid(column=0,row=0,padx=10,pady=5,columnspan = 2)
@@ -171,9 +206,9 @@ def Athlete_Window():
     Label_Athlete_Gender = Label(Second_Window_RIGHT,text='Gender',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
     Label_Athlete_Gender.grid(column=0,row=0,padx=10,pady=5,sticky='w')
     
-    OPTIONS = ['Male','Female','Divers']
+    OPTIONS = ['','Male','Female','Divers']
     Gender_variable = StringVar(Second_Window_RIGHT)
-    Gender_variable.set(OPTIONS[0])
+    Gender_variable.set(OPTIONS[1])
     Athlete_Gender = ttk.OptionMenu(Second_Window_RIGHT,Gender_variable, *OPTIONS )
     Athlete_Gender.grid(column=1,row=0,padx=10,pady=5,sticky='nsew')
    
@@ -197,13 +232,14 @@ def Athlete_Window():
     Text_Athlete_Size.bind("<Tab>", focus_next_widget)
 
     Label_Athlete_ID = Label(Second_Window_LEFT,text='ID',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
-    Label_Athlete_ID.grid(column=0,row=0,padx=10,pady=5,sticky='w')
-    Text_Athlete_ID = Text(Second_Window_LEFT, height = 1, width = 20)
-    Text_Athlete_ID.grid(column=1,row=0,padx=10,pady=5,sticky='nsew')
+    Label_Athlete_ID.grid(column=0,row=0,padx=1,pady=10,sticky='ew')
+    
+    
+    ID_variable = StringVar(Second_Window_LEFT)
+    ID_variable.set(OPTIONS_ID[0])
+    Text_Athlete_ID = ttk.OptionMenu(Second_Window_LEFT,ID_variable, *OPTIONS_ID,command=Aktualisieren)
+    Text_Athlete_ID.grid(column=1,row=0,padx=1,pady=10,sticky='nsew')
     Text_Athlete_ID.bind("<Tab>", focus_next_widget)
-
-    Aktuallisieren_Buttion = Button(Second_Window_LEFT,text='Aktuallisieren',command=Aktuallisieren)
-    Aktuallisieren_Buttion.grid(column=2, row=0,padx=5,pady=5)
 
     Empty_row = Label(Second_Window_LEFT, text='     \n   ', bg=LGrey)
     Empty_row.grid(column=0, row=2,padx=50,pady=5, )

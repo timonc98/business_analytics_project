@@ -7,8 +7,11 @@ print("Database opened successfully")
 #CREATE TABLE ATHELTE
 cur = con.cursor()
 cur.execute('''CREATE TABLE IF NOT EXISTS ATHLETE 
-      (Text_Athlete_Name TEXT       NOT NULL,
-      Text_Athlete_Weight      INT    NOT NULL  );''')
+      (Gender_variable  TEXT     NOT NULL,
+      Text_Athlete_Name TEXT       NOT NULL,
+      Text_Athlete_Weight      INT    NOT NULL,
+      Text_Athlete_Size INT NOT NULL,
+      ID_variable INT PRIMARY KEY);''')
 print("Table created successfully")
 
 # CREATE TABLE TRAINING
