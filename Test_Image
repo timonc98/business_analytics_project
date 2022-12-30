@@ -1,8 +1,17 @@
 from tkinter import *
+from tkcalendar import *
 from PIL import Image, ImageTk
 from tkinter import ttk
 from tkinter import messagebox
 import psycopg2
+from datetime import date
+from datetime import datetime, timedelta
+import ast
+
+## Datum
+today = date.today()
+print("Today's date:", today.day)
+print(today.isoweekday())
 
 #### Farben
 LGrey = '#1b1b1b'
@@ -12,7 +21,7 @@ HGrey = '#545454'
 
 #Wndow Config
 root = Tk()
-root.geometry("1000x640")
+#root.geometry("1100x800")
 root.config(bg=DGrey)
 root.title('Business Athletics')
 
@@ -62,17 +71,19 @@ cur.execute('''CREATE TABLE IF NOT EXISTS ATHLETE
       ID_variable SERIAL PRIMARY KEY);''')
 
 
-# cur.execute('''CREATE TABLE IF NOT EXISTS TRAINING 
-#       (Text_Course_Designation TEXT NOT NULL,
-#       Text_Course_Description TEXT       NOT NULL,
-#       Text_Course_TNr      INT    PRIMARY KEY);''')
+cur.execute('''CREATE TABLE IF NOT EXISTS TRAINING 
+      (Text_Course_Designation TEXT NOT NULL,
+      Text_Course_Description TEXT       NOT NULL,
+      TNR_variable      SERIAL    PRIMARY KEY);''')
 
-# cur.execute('''CREATE TABLE IF NOT EXISTS TRAINING_DATA 
-#       (Text_Athlete_ID INT PRIMARY KEY,
-#       Text_Traning_Date TEXT       NOT NULL,
-#       Text_Training_Start      INT    NOT NULL,
-#       Text_Training_END INT NOT NULL,
-#       Text_Course_TNr INT NOT NULL);''')
+cur.execute('''CREATE TABLE IF NOT EXISTS TRAINING_DATA 
+      (ID_variable_Data INT NOT NULL,
+      Text_Traning_Date TEXT       NOT NULL,
+      Text_Training_Start      TEXT    NOT NULL,
+      Text_Training_END TEXT NOT NULL,
+      TNR_variable_Data INT NOT NULL,
+      Number      SERIAL    PRIMARY KEY);''')
+
 con.commit()
 print("Table created successfully")
 
@@ -81,7 +92,20 @@ print("Table created successfully")
 # Information List
 athletes = []
 
+def Erros(ErrorText):
+   messagebox.showerror('Python Error', 'Error:' + ErrorText)
+
 # Add Information
+def TNR_Drop_Aktu():
+    cur.execute("SELECT TNR_variable FROM TRAINING ")
+    ALL_TNR = cur.fetchall()
+    OPTIONS_TNR = ['']
+
+    for PID in ALL_TNR:
+        OPTIONS_TNR.append(PID[0])
+    print(OPTIONS_TNR)
+    return OPTIONS_TNR
+
 def Id_Drop_Aktu():
     cur.execute("SELECT id_variable FROM ATHLETE ")
     ALL_ID = cur.fetchall()
@@ -91,51 +115,29 @@ def Id_Drop_Aktu():
         OPTIONS_ID.append(PID[0])
     print(OPTIONS_ID)
     return OPTIONS_ID
-    #Gender_variable.set(OPTIONS_ID[1])
 
-def Erros(ErrorText):
-   messagebox.showerror('Python Error', 'Error:' + ErrorText)
+def Calendar_select(event):
+    ID = ID_variable_Data.get()
 
-def add_Athlete():
-    cur.execute("INSERT INTO ATHLETE (Gender_variable,Text_Athlete_Name,Text_Athlete_Weight,Text_Athlete_Size) VALUES (%s,%s,%s,%s)"
-    ,(Gender_variable.get(),Text_Athlete_Name.get("1.0",END), Text_Athlete_Weight.get("1.0",END),Text_Athlete_Size.get("1.0",END)))
-    con.commit()
-    OPTIONS_ID = Id_Drop_Aktu()
-    Text_Athlete_ID2['values'] = OPTIONS_ID
-    Text_Athlete_ID2.current(len(OPTIONS_ID)-1)
+    cur.execute("SELECT * FROM training_data WHERE id_variable_data=" + ID)
+    Trainings_data = cur.fetchall()
+    Text = ''
+    for ele in Trainings_data:
+        if ele[1] == cal.get_date():
+            cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(ele[4]))
+            Trainings_Name = cur.fetchall()
+            Text += "{0:5} {1:5} {2:5} {3:5}".format(ele[5], ele[3], ele[2], Trainings_Name[0][0]) + '\n'
 
-def Delete_Athlete():
-    record_id = ID_variable.get()
-    print(record_id)
-    cur.execute("DELETE FROM  ATHLETE WHERE id_variable='%s'" %(record_id))
-    con.commit()
-
-    Text_Athlete_Name.delete("1.0",END)
-    Text_Athlete_Weight.delete("1.0",END)
-    Text_Athlete_Size.delete("1.0",END)
-    OPTIONS_ID = Id_Drop_Aktu()
-    Text_Athlete_ID2['values'] = OPTIONS_ID
-    Text_Athlete_ID2.current(0)
+    Output_lable.config(text=(cal.get_date() + '\n' + Text))
 
 
-def Change_Athlete():
-    record_id = ID_variable.get()
 
-    cur.execute("SELECT * FROM ATHLETE WHERE id_variable=" + record_id)
-    #records = cur.fetchall()
-
-    cur.execute("Update ATHLETE set gender_variable='%s' , text_Athlete_Name='%s' , text_Athlete_Weight='%s' , text_Athlete_Size='%s' where ID_variable='%s'" 
-                %(Gender_variable.get(),Text_Athlete_Name.get("1.0",END),Text_Athlete_Weight.get("1.0",END),Text_Athlete_Size.get("1.0",END),record_id))
-    
-    con.commit()
-    
 ### Button FUnktions
 def Aktualisieren(event):
 
     record_id = event.widget.get()
     cur.execute("SELECT * FROM ATHLETE WHERE ID_variable=" + record_id)
     records = cur.fetchall()
-    print('Würde Aktualisieren')
 
     if (records[0][0]) == 'Male':
         Gender_variable.set(OPTIONS[1])
@@ -151,33 +153,273 @@ def Aktualisieren(event):
     Text_Athlete_Size.delete("1.0",END)
     Text_Athlete_Size.insert("1.0",records[0][3])
 
+def Aktualisieren_TNR(event):
+        
+    record_TNR = event.widget.get()
+    cur.execute("SELECT * FROM TRAINING WHERE TNR_variable=" + record_TNR)
+    records = cur.fetchall()
+
+    Text_Course_Designation.delete("1.0",END)
+    Text_Course_Designation.insert("1.0",records[0][0])
+    Text_Course_Description.delete("1.0",END)
+    Text_Course_Description.insert("1.0",records[0][1])
+
+
 def focus_next_widget(event):
     event.widget.tk_focusNext().focus()
     return("break")
 
 def Create_Athlete_Button():
-    add_Athlete()
+
+    cur.execute("INSERT INTO ATHLETE (Gender_variable,Text_Athlete_Name,Text_Athlete_Weight,Text_Athlete_Size) VALUES (%s,%s,%s,%s)"
+    ,(Gender_variable.get(),Text_Athlete_Name.get("1.0",END), Text_Athlete_Weight.get("1.0",END),Text_Athlete_Size.get("1.0",END)))
+    con.commit()
+    OPTIONS_ID = Id_Drop_Aktu()
+    Text_Athlete_ID2['values'] = OPTIONS_ID
+    Text_Athlete_ID2.current(len(OPTIONS_ID)-1)
 
 def Delete_Athlete_Button():
-    Delete_Athlete()
+    record_id = ID_variable.get()
+    cur.execute("DELETE FROM  ATHLETE WHERE id_variable='%s'" %(record_id))
+    con.commit()
+    cur.execute("DELETE FROM training_data WHERE id_variable_data='%s'" %(record_id))
+    con.commit()
+
+    Text_Athlete_Name.delete("1.0",END)
+    Text_Athlete_Weight.delete("1.0",END)
+    Text_Athlete_Size.delete("1.0",END)
+    OPTIONS_ID = Id_Drop_Aktu()
+    Text_Athlete_ID2['values'] = OPTIONS_ID
+    Text_Athlete_ID2.current(0)
 
 def Change_Athlete_Button():
-    Change_Athlete()
+    record_id = ID_variable.get()
+
+    cur.execute("SELECT * FROM ATHLETE WHERE id_variable=" + record_id)
+
+    cur.execute("Update ATHLETE set gender_variable='%s' , text_Athlete_Name='%s' , text_Athlete_Weight='%s' , text_Athlete_Size='%s' where ID_variable='%s'" 
+                %(Gender_variable.get(),Text_Athlete_Name.get("1.0",END),Text_Athlete_Weight.get("1.0",END),Text_Athlete_Size.get("1.0",END),record_id))
+    
+    con.commit()
 
 def Create_Training_Button():
-    print('1')
+    cur.execute("INSERT INTO TRAINING (Text_Course_Designation,Text_Course_Description) VALUES (%s,%s)"
+    ,(Text_Course_Designation.get("1.0",END),Text_Course_Description.get("1.0",END)))
+    con.commit()
+    OPTIONS_ID = TNR_Drop_Aktu()
+    Text_Course_TNr['values'] = OPTIONS_ID
+    Text_Course_TNr.current(len(OPTIONS_ID)-1)
 
 def Delete_Training_Button():
-    print('1')
+    record_TNR = TNR_variable.get()
+    cur.execute("DELETE FROM  TRAINING WHERE TNR_variable='%s'" %(record_TNR))
+    con.commit()
+
+    cur.execute("DELETE FROM training_data WHERE tnr_variable_data='%s'" %(record_TNR))
+    con.commit()
+
+    Text_Course_Designation.delete("1.0",END)
+    Text_Course_Description.delete("1.0",END)
+    OPTIONS_TNR = TNR_Drop_Aktu()
+    Text_Course_TNr['values'] = OPTIONS_TNR
+    Text_Course_TNr.current(0)
 
 def Change_Training_Button():
-    print('1')
+    record_TNR = TNR_variable.get()
+
+    cur.execute("SELECT * FROM TRAINING WHERE TNR_variable=" + record_TNR)
+
+    cur.execute("Update TRAINING set Text_Course_Designation='%s' , Text_Course_Description='%s' where TNR_variable='%s'" 
+                %(Text_Course_Designation.get("1.0",END),Text_Course_Description.get("1.0",END),record_TNR))
+    
+    con.commit()
 
 def Save_Training_Data_Button():
-    print('1')
+    Start = str(Text_Training_Start_Hour.get())+':' + str(Text_Training_Start_Min.get())
+    Stop = str(Text_Training_Stop_Hour.get())+':' + str(Text_Training_Stop_Min.get())
+    
+    cur.execute("INSERT INTO TRAINING_DATA (ID_variable_Data,Text_Traning_Date,Text_Training_Start,Text_Training_END,TNR_variable_Data) VALUES (%s,%s,%s,%s,%s)"
+    ,(ID_variable_Data.get(),cal.get_date(),Stop,Start,TNR_variable_Data.get()))
+    con.commit()
+
+    ID = ID_variable_Data.get()
+
+    cur.execute("SELECT * FROM training_data WHERE id_variable_data=" + ID)
+    Trainings_data = cur.fetchall()
+    Text = ''
+    for ele in Trainings_data:
+        if ele[1] == cal.get_date():
+            cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(ele[4]))
+            Trainings_Name = cur.fetchall()
+            Text += "{0:5} {1:5} {2:5} {3:5}".format(ele[5], ele[3], ele[2], Trainings_Name[0][0]) + '\n'
+
+    Output_lable.config(text=(cal.get_date() + '\n' + Text))
+
 
 def Delete_Training_Data_Button():
-    print(Text_Athlete_ID.get(Text_Athlete_ID))
+    def Delete_Training():
+        
+
+        print(Delete_Number.get())
+
+        cur.execute("DELETE FROM TRAINING_DATA WHERE number=" + (Delete_Number.get()))
+        con.commit()
+
+        ID = ID_variable_Data.get()
+        cur.execute("SELECT * FROM training_data WHERE id_variable_data=" + ID)
+        Trainings_data = cur.fetchall()
+        Text = ''
+        for ele in Trainings_data:
+            if ele[1] == cal.get_date():
+                cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(ele[4]))
+                Trainings_Name = cur.fetchall()
+                Text += "{0:5} {1:5} {2:5} {3:5}".format(ele[5], ele[3], ele[2], Trainings_Name[0][0]) + '\n'
+
+        Output_lable.config(text=(cal.get_date() + '\n' + Text))
+        Delete_window.destroy()
+
+            
+
+    Delete_window = Toplevel()
+    #Delete_window .geometry('180x100')
+    Delete_window.config(bg=DGrey)
+    Delete_window.title('Delete Window')
+
+    Delete_lable = Label(Delete_window,text='Delete Number:',bg=DGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Delete_lable.grid(column=0,row=0,padx=10,pady=5,sticky='nsew')
+    Delete_Number = Spinbox(Delete_window, justify=CENTER,width=0,from_=1,to=999999)
+    Delete_Number.grid(column=0,row=1,padx=10,pady=5,sticky='nsew')
+    Delete_button = Button(Delete_window,text="Delete Training",command=Delete_Training)
+    Delete_button.grid(column=0,row=2,padx=10,pady=5,sticky='nsew')
+
+def training_schedule():
+    mylist = []
+    Data_List = StringVar(value=mylist)
+    def Schedual_Display(event=None):
+        Tabel = "{0:5} {1:7} {2:5} {3:5}".format("Day","Start","Stop","Type")
+        ID = ID_variable_Data.get()
+        Wekday_names = ["Mo","Di","Mi","Do","Fr","Sa","So"]
+
+        if var.get() == 0:
+            Weekday = today.weekday()
+            
+            Output_text = ''
+            List = []
+            cur.execute("SELECT * FROM training_data WHERE id_variable_data=" + ID)
+            Trainings_data = cur.fetchall()
+            # for Weekday in range(1,8):
+            
+            for Record in Trainings_data:
+
+                datetime_object = datetime.strptime(Record[1], '%d.%m.%Y').date()
+
+                if ((datetime_object>= today- timedelta(days=7)) or (datetime_object<= today)):
+
+                    cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(Record[4]))
+                    Trainings_Name = cur.fetchall()
+                    List.append((datetime_object.weekday(),Record[3],Record[2],Record[4]))
+            List.sort()
+            for ele in List:
+                Output_text += "{0:5} {1:5} {2:5} {3:5}".format(Wekday_names[ele[0]],ele[1],ele[2],Trainings_Name[0][0])
+                #Record[1].weekday()
+
+            Display_Lable.config(text=("ID = "+ str(ID) + '\n' + Tabel + '\n' + Output_text))
+            Data_List.set(List)
+
+        
+        elif var.get() == 1:
+            List = []
+            Output_text = ''
+            List = [(0,"15:00","17:00",1),(1,"15:00","17:00",1),(2,"15:00","17:00",1),(3,"15:00","17:00",1),(4,"15:00","17:00",1),(5,"-","-","-"),(6,"-","-","-")]
+            for ele in List:
+                if isinstance(ele[3], int) == True:
+                    cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(ele[3]))
+                    Trainings_Name = cur.fetchall()
+                    Output_text += "{0:5} {1:7} {2:5} {3:5}".format(Wekday_names[ele[0]],ele[1],ele[2],Trainings_Name[0][0])
+                else:
+                    Output_text += "{0:5} {1:7} {2:5} {3:5}".format(Wekday_names[ele[0]],ele[1],ele[2],ele[3]) + "\n"
+
+            Display_Lable.config(text=("ID = "+ str(ID) + '\n' + Tabel + '\n' + Output_text))
+            Data_List.set(List)
+
+        elif var.get() == 2:
+            List = []
+            Output_text = ''
+            List = [(0,"15:00","17:00",1),(1,"15:00","17:00",1),(2,"15:00","17:00",1),(3,"15:00","17:00",1),(4,"15:00","17:00",1),(5,"-","-","-"),(6,"-","-","-")]
+            for ele in List:
+                if isinstance(ele[3], int) == True:
+                    cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(ele[3]))
+                    Trainings_Name = cur.fetchall()
+                    Output_text += "{0:5} {1:7} {2:5} {3:5}".format(Wekday_names[ele[0]],ele[1],ele[2],Trainings_Name[0][0])
+                else:
+                    Output_text += "{0:5} {1:7} {2:5} {3:5}".format(Wekday_names[ele[0]],ele[1],ele[2],ele[3]) + "\n"
+
+            Display_Lable.config(text=("ID = "+ str(ID) + '\n' + Tabel + '\n' + Output_text))
+            Data_List.set(List)
+
+        elif var.get() == 3:
+            List = []
+            Output_text = ''
+            List = [(0,"15:00","17:00",1),(1,"15:00","17:00",1),(2,"15:00","17:00",1),(3,"15:00","17:00",1),(4,"15:00","17:00",1),(5,"-","-","-"),(6,"-","-","-")]
+            for ele in List:
+                if isinstance(ele[3], int) == True:
+                    cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(ele[3]))
+                    Trainings_Name = cur.fetchall()
+                    Output_text += "{0:5} {1:7} {2:5} {3:5}".format(Wekday_names[ele[0]],ele[1],ele[2],Trainings_Name[0][0])
+                else:
+                    Output_text += "{0:5} {1:7} {2:5} {3:5}".format(Wekday_names[ele[0]],ele[1],ele[2],ele[3]) + "\n"
+
+            Display_Lable.config(text=("ID = "+ str(ID) + '\n' + Tabel + '\n' + Output_text))
+            Data_List.set(List)
+
+    def Apply_Training():
+        
+        ID = ID_variable_Data.get()
+        Data = ast.literal_eval('[' + Data_List.get()[1:-1] + ']')
+        print(Data[0])
+        for Element in Data:        
+            if isinstance(Element[3], int) == True:
+
+                Day = today + timedelta(days=(Element[0] + 1 - today.weekday()+6))
+                Day = Day.strftime("%d.%m.%Y") 
+                cur.execute("INSERT INTO TRAINING_DATA (ID_variable_Data,Text_Traning_Date,Text_Training_Start,Text_Training_END,TNR_variable_Data) VALUES (%s,%s,%s,%s,%s)"
+                ,(ID,Day,Element[1],Element[2],Element[3]))
+                con.commit()
+
+
+        Schedule_window.destroy()
+
+    Schedule_window = Toplevel()
+    Schedule_window.config(bg=DGrey)
+    Schedule_window.title('Trainings Schedual')
+
+    Schedule_Lable = Label(Schedule_window,text='Choose Traingins Schedual:',bg=DGrey,fg='White',pady = 2,font=('Calibri', 18))
+    Schedule_Lable.grid(column=0,row=0,padx=10,pady=5,sticky='nsew')
+
+
+    Schedule_Frame_Right = Frame(Schedule_window,width=100,height=500,bg=DGrey,bd=5, highlightbackground='white')
+    Schedule_Frame_Right.grid(column=0,row=1,padx=10,pady=5)
+    Schedule_Frame_Left = Frame(Schedule_window,width=200,height=500,bg=DGrey,bd=5, highlightbackground='white')
+    Schedule_Frame_Left.grid(column=1,row=1,padx=10,pady=5)
+
+
+    Ckeckbox_text = ['Repeat Training','Training Schedual 1','Training Schedual 2','Training Schedual 3']
+    var = IntVar()         #Creating a variable which will track the selected checkbutton
+    cb = []                   #Empty list which is going to hold all the checkbutton
+    for i in range(4):
+        cb.append(Checkbutton(Schedule_Frame_Right, text=Ckeckbox_text[i],bg=DGrey,fg='White',onvalue = i,variable=var,command= lambda : Schedual_Display(),activebackground='black', activeforeground='white',selectcolor="black",))
+                            
+        cb[i].grid(column=0,row=i,padx=10,pady=5,sticky='nsew')          
+    
+
+    
+    Display_Lable = Label(Schedule_Frame_Left, text='',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15),width=100,height=20, anchor='n')
+    Display_Lable.grid(column=0,row=0,padx=10,pady=5,columnspan=4)
+
+    Training_Choosen = Button(Schedule_Frame_Left,text="Apply Training",command=lambda: Apply_Training())
+    Training_Choosen.grid(column=4,row=1,padx=10,pady=5,sticky='nsew')
+
+    Schedual_Display(event=None)
 
 def Athlete_Window():
     clear_frame(Second_Fame)
@@ -192,10 +434,10 @@ def Athlete_Window():
     Label_Second_Window.grid(pady = 45,padx=10, columnspan = 2)
 
     Second_Window_RIGHT = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
-    Second_Window_RIGHT.grid(column=0,row=1,padx=10,pady=5)
+    Second_Window_RIGHT.grid(column=0,row=1,padx=10,pady=5,sticky='nsew')
 
     Second_Window_LEFT = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5,highlightbackground=RGrey)
-    Second_Window_LEFT.grid(column=1,row=1,padx=10,pady=5)
+    Second_Window_LEFT.grid(column=1,row=1,padx=10,pady=5,sticky='nsew')
 
     #### Widgets
     Label_Athlete_Gender = Label(Second_Window_RIGHT,text='Gender',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
@@ -228,13 +470,6 @@ def Athlete_Window():
 
     Label_Athlete_ID = Label(Second_Window_LEFT,text='ID',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
     Label_Athlete_ID.grid(column=0,row=0,padx=1,pady=10,sticky='ew')
-    
-    
-    # ID_variable = StringVar(Second_Window_LEFT)
-    # ID_variable.set(OPTIONS_ID[0])
-    # Text_Athlete_ID = ttk.OptionMenu(Second_Window_LEFT,ID_variable, *OPTIONS_ID,command=Aktualisieren)
-    # Text_Athlete_ID.grid(column=1,row=0,padx=1,pady=10,sticky='nsew')
-    # Text_Athlete_ID.bind("<Tab>", focus_next_widget)
 
     ID_variable = StringVar(Second_Window_LEFT)
     Text_Athlete_ID2 = ttk.Combobox(Second_Window_LEFT, textvariable=ID_variable, values=OPTIONS_ID)
@@ -268,9 +503,10 @@ def Athlete_Window():
 
 def Course_Window():
     clear_frame(Second_Fame)
-
-    global Text_Course_Designation,Text_Course_Description,Text_Course_TNr
     
+    global Text_Course_Designation,Text_Course_Description,Text_Course_TNr, TNR_variable
+    OPTIONS_TNR = TNR_Drop_Aktu()
+
     Second_Window_TOP = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
     Second_Window_TOP.grid(column=0,row=0,padx=10,pady=5,columnspan = 2)
 
@@ -278,10 +514,10 @@ def Course_Window():
     Label_Second_Window.grid(pady = 45,padx=10, columnspan = 2)
 
     Second_Window_RIGHT = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
-    Second_Window_RIGHT.grid(column=0,row=1,padx=10,pady=5)
+    Second_Window_RIGHT.grid(column=0,row=1,padx=10,pady=5,sticky='nsew')
 
     Second_Window_LEFT = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5,highlightbackground=RGrey)
-    Second_Window_LEFT.grid(column=1,row=1,padx=10,pady=5)
+    Second_Window_LEFT.grid(column=1,row=1,padx=10,pady=5,sticky='nsew')
 
     #### Widgets
 
@@ -299,9 +535,15 @@ def Course_Window():
 
     Label_Course_TNr = Label(Second_Window_LEFT,text='TNr',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
     Label_Course_TNr.grid(column=0,row=0,padx=10,pady=5,sticky='w')
-    Text_Course_TNr = Text(Second_Window_LEFT, height = 1, width = 20)
+
+
+    TNR_variable = StringVar(Second_Window_LEFT)
+    Text_Course_TNr = ttk.Combobox(Second_Window_LEFT, textvariable=TNR_variable, values=OPTIONS_TNR)
+    Text_Course_TNr.current(0)
+    Text_Course_TNr.bind("<<ComboboxSelected>>", Aktualisieren_TNR)
     Text_Course_TNr.grid(column=1,row=0,padx=10,pady=5,sticky='nsew')
     Text_Course_TNr.bind("<Tab>", focus_next_widget)
+
 
     Empty_row = Label(Second_Window_LEFT, text='     \n   ', bg=LGrey)
     Empty_row.grid(column=0, row=1,padx=50,pady=5)
@@ -330,7 +572,10 @@ def Course_Window():
 def Enter_Training_Window():
     clear_frame(Second_Fame)
     
-    global Text_Athlete_ID,Text_Traning_Date,Text_Training_Start,Text_Training_END,Text_Course_TNr
+    global Text_Training_Stop_Hour,Text_Training_Stop_Min,Text_Training_Start_Hour,Text_Training_Start_Min,Output_lable,Text_Course_TNr,ID_variable_Data,TNR_variable_Data,cal
+
+    OPTIONS_ID = Id_Drop_Aktu() 
+    OPTIONS_TNR = TNR_Drop_Aktu()
 
     Second_Window_TOP = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
     Second_Window_TOP.grid(column=0,row=0,padx=10,pady=5,columnspan = 2)
@@ -339,64 +584,97 @@ def Enter_Training_Window():
     Label_Second_Window.grid(pady = 45,padx=10, columnspan = 2)
 
     Second_Window_RIGHT = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
-    Second_Window_RIGHT.grid(column=0,row=1,padx=10,pady=5)
+    Second_Window_RIGHT.grid(column=0,row=1,padx=10,pady=5,sticky='nsew')
 
     Second_Window_LEFT = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5,highlightbackground=RGrey)
-    Second_Window_LEFT.grid(column=1,row=1,padx=10,pady=5)
+    Second_Window_LEFT.grid(column=1,row=1,padx=10,pady=5,sticky='nsew')
+
+    Thirdframe = Frame(Second_Fame,width=100,height=720,bg=LGrey,bd=5,highlightbackground=RGrey)
+    Thirdframe.grid(column=2,row=1,padx=10,pady=5,sticky='nsew')
 
     #### Widgets
 
     Label_Athlete_Gender = Label(Second_Window_RIGHT,text='Athlete ID',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
     Label_Athlete_Gender.grid(column=0,row=0,padx=10,pady=5,sticky='w')
-    Text_Athlete_ID = Text(Second_Window_RIGHT, height = 1, width = 20)
-    Text_Athlete_ID.grid(column=1,row=1,padx=10,pady=5,sticky='nsew')
-    Text_Athlete_ID.bind("<Tab>", focus_next_widget)
+
+    ID_variable_Data = StringVar(Second_Window_LEFT)
+    Text_Athlete_ID2 = ttk.Combobox(Second_Window_RIGHT, textvariable=ID_variable_Data, values=OPTIONS_ID)
+    Text_Athlete_ID2.current(1)
+    #Text_Athlete_ID2.bind("<<ComboboxSelected>>", Aktualisieren)
+    Text_Athlete_ID2.grid(column=1,row=0,padx=10,pady=5,sticky='nsew')
+    Text_Athlete_ID2.bind("<Tab>", focus_next_widget)
 
     Label_Traning_Date = Label(Second_Window_RIGHT,text='Date',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
     Label_Traning_Date.grid(column=0,row=1,padx=10,pady=5,sticky='w')
-    Text_Traning_Date = Text(Second_Window_RIGHT, height = 1, width = 20)
-    Text_Traning_Date.grid(column=1,row=1,padx=10,pady=5,sticky='nsew')
-    Text_Traning_Date.bind("<Tab>", focus_next_widget)
+    cal = Calendar(Second_Window_RIGHT,date_pattern='dd.mm.yyyy',selectmode="day", year=today.year, month=today.month, day=today.day)
+    cal.grid(column=1,row=1,padx=10,pady=5)
+    cal.bind("<Tab>", focus_next_widget)
+    cal.bind("<<CalendarSelected>>", Calendar_select)
 
-    Label_Training_Start = Label(Second_Window_RIGHT,text='Start Time',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
-    Label_Training_Start.grid(column=0,row=2,padx=10,pady=5,sticky='w')
-    Text_Training_Start = Text(Second_Window_RIGHT, height = 1, width = 20)
-    Text_Training_Start.grid(column=1,row=2,padx=10,pady=5,sticky='nsew')
-    Text_Training_Start.bind("<Tab>", focus_next_widget)
+    Time_Frame = Frame(Second_Window_RIGHT,bg=LGrey,bd=5, highlightbackground='white')
+    Time_Frame.grid(column=1,row=2,padx=10,pady=5)
 
-    Label_Training_END = Label(Second_Window_RIGHT,text='End Time',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
-    Label_Training_END.grid(column=0,row=3,padx=10,pady=5,sticky='w')
-    Text_Training_END = Text(Second_Window_RIGHT, height = 1, width = 20)
-    Text_Training_END.grid(column=1,row=3,padx=10,pady=5,sticky='nsew')
-    Text_Training_END.bind("<Tab>", focus_next_widget)
+    Label_Training_Start = Label(Time_Frame,text='Start Time',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Training_Start.grid(column=0,row=2, columnspan = 2,padx=10,pady=5,sticky='nsew')
+
+    Text_Training_Start_Hour = Spinbox(Time_Frame, justify=CENTER,width=10,from_=00, to=24,format="%02.0f")
+    Text_Training_Start_Hour.grid(column=0,row=3,padx=5,pady=5,sticky='nsew')
+    Text_Training_Start_Hour.bind("<Tab>", focus_next_widget)
+    Text_Training_Start_Min = Spinbox(Time_Frame, justify=CENTER,width=10,from_=00, to=60,format="%02.0f")
+    Text_Training_Start_Min.grid(column=1,row=3,padx=5,pady=5,sticky='nsew')
+    Text_Training_Start_Min.bind("<Tab>", focus_next_widget)
+
+    
+    Label_Training_END = Label(Time_Frame,text='End Time',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_Training_END.grid(column=0,row=4, columnspan = 2,padx=10,pady=5,sticky='nsew')
+
+    
+    Text_Training_Stop_Hour = Spinbox(Time_Frame, justify=CENTER,width=10,from_=00, to=24,format="%02.0f")
+    Text_Training_Stop_Hour.grid(column=0,row=5,padx=5,pady=5,sticky='nsew')
+    Text_Training_Stop_Hour.bind("<Tab>", focus_next_widget)
+    Text_Training_Stop_Min = Spinbox(Time_Frame, justify=CENTER,width=10,from_=00, to=60,format="%02.0f")
+    Text_Training_Stop_Min.grid(column=1,row=5, padx=5,pady=5,sticky='nsew')
+    Text_Training_Stop_Min.bind("<Tab>", focus_next_widget)
+
 
     Label_Course_TNr = Label(Second_Window_LEFT,text='Course (TNr)',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
     Label_Course_TNr.grid(column=0,row=0,padx=10,pady=5,sticky='w')
-    Text_Course_TNr = Text(Second_Window_LEFT, height = 1, width = 20)
+
+    TNR_variable_Data = StringVar(Second_Window_LEFT)
+    Text_Course_TNr = ttk.Combobox(Second_Window_LEFT, textvariable=TNR_variable_Data, values=OPTIONS_TNR)
+    Text_Course_TNr.current(1)
+    #Text_Course_TNr.bind("<<ComboboxSelected>>", Aktualisieren_TNR)
     Text_Course_TNr.grid(column=1,row=0,padx=10,pady=5,sticky='nsew')
     Text_Course_TNr.bind("<Tab>", focus_next_widget)
 
-    Empty_row = Label(Second_Window_LEFT, text='     \n   ', bg=LGrey)
-    Empty_row.grid(column=0, row=2,padx=50,pady=5, )
-    Empty_row = Label(Second_Window_RIGHT, text='     \n   ', bg=LGrey)
-    Empty_row.grid(column=0, row=4,padx=50,pady=5, )
+    Output_Name = Label(Thirdframe, text='Training',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Output_Name.grid(column=0,row=0,padx=10,pady=5)
+    Output_lable = Label(Thirdframe, text='',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Output_lable.grid(column=0,row=1,padx=10,pady=5)
 
     
     canvas_Second_Window2 = Canvas(Second_Window_LEFT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
-    canvas_Second_Window2.grid(row=3,padx=50,pady=5, columnspan = 2,sticky='n')
+    canvas_Second_Window2.grid(row=1,padx=50,pady=5, columnspan = 2,sticky='n')
     canvas_Second_Window3= Canvas(Second_Window_LEFT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
-    canvas_Second_Window3.grid(row=4,padx=50,pady=5, columnspan = 2,sticky='n')
+    canvas_Second_Window3.grid(row=2,padx=50,pady=5, columnspan = 2,sticky='n')
+    canvas_Second_Window4= Canvas(Second_Window_LEFT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
+    canvas_Second_Window4.grid(row=3,padx=50,pady=5, columnspan = 2,sticky='n')
 
     Change_Athlete= Button(canvas_Second_Window2)
     Change_Athlete.grid(column=0,row=0)
     Delete_Athlete= Button(canvas_Second_Window3)
     Delete_Athlete.grid(column=0,row=0)
+    repeat_Training = Button(canvas_Second_Window4)
+    repeat_Training.grid(column=0,row=0)
+
     
     Active_Button(Change_Athlete,canvas_Second_Window2,canvas_Second_Window2,"Images\Save_Training_Data_active.png","Images\Save_Training_Data_inactive.png",Save_Training_Data_Button,LGrey,LEFT)
     Active_Button(Delete_Athlete,canvas_Second_Window3,canvas_Second_Window3,"Images\Delete_Training_Data_active.png","Images\Delete_Training_Data_inactive.png",Delete_Training_Data_Button,LGrey,LEFT)
+    Active_Button(repeat_Training,canvas_Second_Window4,canvas_Second_Window4,"Images\Training_schedual_active.png","Images\Training_schedual_inactive.png",training_schedule,LGrey,LEFT)
     
 def quit():
     root.destroy()
+    
 
 ### Main
 
