@@ -61,28 +61,30 @@ con = psycopg2.connect(database="postgres", user="postgres", password="Lukasso00
 print("Database opened successfully")
 
 #CREATE TABLE ATHELTE
+
 cur = con.cursor()
 
+
 cur.execute('''CREATE TABLE IF NOT EXISTS ATHLETE 
-      (Gender_variable  TEXT     NOT NULL,
-      Text_Athlete_Name TEXT       NOT NULL,
-      Text_Athlete_Weight      INT    NOT NULL,
-      Text_Athlete_Size INT NOT NULL,
-      ID_variable SERIAL PRIMARY KEY);''')
+    (Gender_variable  TEXT     NOT NULL,
+    Text_Athlete_Name TEXT       NOT NULL,
+    Text_Athlete_Weight      INT    NOT NULL,
+    Text_Athlete_Size INT NOT NULL,
+    ID_variable SERIAL PRIMARY KEY);''')
 
 
 cur.execute('''CREATE TABLE IF NOT EXISTS TRAINING 
-      (Text_Course_Designation TEXT NOT NULL,
-      Text_Course_Description TEXT       NOT NULL,
-      TNR_variable      SERIAL    PRIMARY KEY);''')
+    (Text_Course_Designation TEXT NOT NULL,
+    Text_Course_Description TEXT       NOT NULL,
+    TNR_variable      SERIAL    PRIMARY KEY);''')
 
 cur.execute('''CREATE TABLE IF NOT EXISTS TRAINING_DATA 
-      (ID_variable_Data INT NOT NULL,
-      Text_Traning_Date TEXT       NOT NULL,
-      Text_Training_Start      TEXT    NOT NULL,
-      Text_Training_END TEXT NOT NULL,
-      TNR_variable_Data INT NOT NULL,
-      Number      SERIAL    PRIMARY KEY);''')
+    (ID_variable_Data INT NOT NULL,
+    Text_Traning_Date TEXT       NOT NULL,
+    Text_Training_Start      TEXT    NOT NULL,
+    Text_Training_END TEXT NOT NULL,
+    TNR_variable_Data INT NOT NULL,
+    Number      SERIAL    PRIMARY KEY);''')
 
 con.commit()
 print("Table created successfully")
@@ -92,8 +94,12 @@ print("Table created successfully")
 # Information List
 athletes = []
 
+#Errolist
 def Erros(ErrorText):
-   messagebox.showerror('Python Error', 'Error:' + ErrorText)
+   messagebox.showerror('Python Error', 'Error: ' + ErrorText)
+   con = psycopg2.connect(database="postgres", user="postgres", password="Lukasso007", host="127.0.0.1", port="5432")
+   cur = con.cursor()
+   return cur 
 
 # Add Information
 def TNR_Drop_Aktu():
@@ -170,13 +176,15 @@ def focus_next_widget(event):
     return("break")
 
 def Create_Athlete_Button():
-
-    cur.execute("INSERT INTO ATHLETE (Gender_variable,Text_Athlete_Name,Text_Athlete_Weight,Text_Athlete_Size) VALUES (%s,%s,%s,%s)"
-    ,(Gender_variable.get(),Text_Athlete_Name.get("1.0",END), Text_Athlete_Weight.get("1.0",END),Text_Athlete_Size.get("1.0",END)))
-    con.commit()
-    OPTIONS_ID = Id_Drop_Aktu()
-    Text_Athlete_ID2['values'] = OPTIONS_ID
-    Text_Athlete_ID2.current(len(OPTIONS_ID)-1)
+    try:
+        cur.execute("INSERT INTO ATHLETE (Gender_variable,Text_Athlete_Name,Text_Athlete_Weight,Text_Athlete_Size) VALUES (%s,%s,%s,%s)"
+        ,(Gender_variable.get(),Text_Athlete_Name.get("1.0",END), Text_Athlete_Weight.get("1.0",END),Text_Athlete_Size.get("1.0",END)))
+        con.commit()
+        OPTIONS_ID = Id_Drop_Aktu()
+        Text_Athlete_ID2['values'] = OPTIONS_ID
+        Text_Athlete_ID2.current(len(OPTIONS_ID)-1)
+    except:
+        Erros("Wrong entery")
 
 def Delete_Athlete_Button():
     record_id = ID_variable.get()
