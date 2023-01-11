@@ -58,7 +58,7 @@ def Active_Button(ButtonName,Canvas_Name,Frame,ImageName_Active,ImageName_Inctiv
     ButtonName.bind("<Leave>", on_leave)
 
 ### Database
-con = psycopg2.connect(database="postgres", user="postgres", password="timon1998", host="127.0.0.1", port="5432")
+con = psycopg2.connect(database="postgres", user="postgres", password="Lukasso007", host="127.0.0.1", port="5432")
 
 print("Database opened successfully")
 
@@ -186,8 +186,10 @@ def Create_Athlete_Button():
         OPTIONS_ID = Id_Drop_Aktu()
         Text_Athlete_ID2['values'] = OPTIONS_ID
         Text_Athlete_ID2.current(len(OPTIONS_ID)-1)
+
     except DatabaseError:
-         con.rollback()
+        Erros('No entery')
+        con.rollback()
 
 def Delete_Athlete_Button():
     record_id = ID_variable.get()
