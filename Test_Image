@@ -7,6 +7,8 @@ import psycopg2
 from datetime import date
 from datetime import datetime, timedelta
 import ast
+from django.db import transaction, DatabaseError
+
 
 ## Datum
 today = date.today()
@@ -97,9 +99,9 @@ athletes = []
 #Errolist
 def Erros(ErrorText):
    messagebox.showerror('Python Error', 'Error: ' + ErrorText)
-   con = psycopg2.connect(database="postgres", user="postgres", password="Lukasso007", host="127.0.0.1", port="5432")
-   cur = con.cursor()
-   return cur 
+#    con = psycopg2.connect(database="postgres", user="postgres", password="Lukasso007", host="127.0.0.1", port="5432")
+#    cur = con.cursor()
+#    return cur 
 
 # Add Information
 def TNR_Drop_Aktu():
@@ -183,8 +185,8 @@ def Create_Athlete_Button():
         OPTIONS_ID = Id_Drop_Aktu()
         Text_Athlete_ID2['values'] = OPTIONS_ID
         Text_Athlete_ID2.current(len(OPTIONS_ID)-1)
-    except:
-        Erros("Wrong entery")
+    except DatabaseError:
+         con.rollback()
 
 def Delete_Athlete_Button():
     record_id = ID_variable.get()
