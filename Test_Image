@@ -58,7 +58,7 @@ def Active_Button(ButtonName,Canvas_Name,Frame,ImageName_Active,ImageName_Inctiv
     ButtonName.bind("<Leave>", on_leave)
 
 ### Database
-con = psycopg2.connect(database="postgres", user="postgres", password="Lukasso007", host="127.0.0.1", port="5432")
+con = psycopg2.connect(database="postgres", user="postgres", password="timon1998", host="127.0.0.1", port="5432")
 
 print("Database opened successfully")
 
@@ -249,7 +249,7 @@ def Save_Training_Data_Button():
     Stop = str(Text_Training_Stop_Hour.get())+':' + str(Text_Training_Stop_Min.get())
     
     cur.execute("INSERT INTO TRAINING_DATA (ID_variable_Data,Text_Traning_Date,Text_Training_Start,Text_Training_END,TNR_variable_Data) VALUES (%s,%s,%s,%s,%s)"
-    ,(ID_variable_Data.get(),cal.get_date(),Stop,Start,TNR_variable_Data.get()))
+    ,(ID_variable_Data.get(),cal.get_date(),Start,Stop,TNR_variable_Data.get()))
     con.commit()
 
     ID = ID_variable_Data.get()
@@ -261,8 +261,8 @@ def Save_Training_Data_Button():
         if ele[1] == cal.get_date():
             cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(ele[4]))
             Trainings_Name = cur.fetchall()
-            Text += "{0:5} {1:5} {2:5} {3:5}".format(ele[5], ele[3], ele[2], Trainings_Name[0][0]) + '\n'
-
+            Text += "{0:5} {1:5} {2:5} {3:5}".format(ele[5], ele[2], ele[3], Trainings_Name[0][0]) + '\n'
+    
     Output_lable.config(text=(cal.get_date() + '\n' + Text))
 
 
@@ -327,7 +327,7 @@ def training_schedule():
 
                     cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(Record[4]))
                     Trainings_Name = cur.fetchall()
-                    List.append((datetime_object.weekday(),Record[3],Record[2],Record[4]))
+                    List.append((datetime_object.weekday(),Record[2],Record[3],Record[4]))
             List.sort()
             for ele in List:
                 Output_text += "{0:5} {1:5} {2:5} {3:5}".format(Wekday_names[ele[0]],ele[1],ele[2],Trainings_Name[0][0])
@@ -398,7 +398,7 @@ def training_schedule():
 
 
         Schedule_window.destroy()
-
+    
     Schedule_window = Toplevel()
     Schedule_window.config(bg=DGrey)
     Schedule_window.title('Trainings Schedual')
