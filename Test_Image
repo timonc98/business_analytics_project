@@ -133,9 +133,9 @@ def Calendar_select(event):
     Text = ''
     for ele in Trainings_data:
         if ele[1] == cal.get_date():
-            cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(ele[4]))
+            cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(ele[5]))
             Trainings_Name = cur.fetchall()
-            Text += "{0:5} {1:5} {2:5} {3:5}".format(ele[5], ele[3], ele[2], Trainings_Name[0][0]) + '\n'
+            Text += "{0:5} {1:5} {2:5} {3:5}".format(ele[6], ele[4], ele[2], Trainings_Name[0][0]) + '\n'
 
     Output_lable.config(text=(cal.get_date() + '\n' + Text))
 
@@ -265,7 +265,7 @@ def Save_Training_Data_Button():
         if ele[1] == cal.get_date():
             cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(ele[5]))
             Trainings_Name = cur.fetchall()
-            Text += "{0:5} {1:5} {2:5} {3:5}".format(ele[6], ele[2], ele[3], Trainings_Name[0][0]) + '\n'
+            Text += "{0:5} {1:5} {2:5} {3:5}".format(ele[6], ele[2], ele[4], Trainings_Name[0][0]) + '\n'
     
     Output_lable.config(text=(cal.get_date() + '\n' + Text))
 
@@ -285,9 +285,9 @@ def Delete_Training_Data_Button():
         Text = ''
         for ele in Trainings_data:
             if ele[1] == cal.get_date():
-                cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(ele[4]))
+                cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(ele[6]))
                 Trainings_Name = cur.fetchall()
-                Text += "{0:5} {1:5} {2:5} {3:5}".format(ele[5], ele[3], ele[2], Trainings_Name[0][0]) + '\n'
+                Text += "{0:5} {1:5} {2:5} {3:5}".format(ele[6], ele[4], ele[2], Trainings_Name[0][0]) + '\n'
 
         Output_lable.config(text=(cal.get_date() + '\n' + Text))
         Delete_window.destroy()
@@ -329,9 +329,9 @@ def training_schedule():
 
                 if ((datetime_object>= today- timedelta(days=7)) or (datetime_object<= today)):
 
-                    cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(Record[4]))
+                    cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(Record[5]))
                     Trainings_Name = cur.fetchall()
-                    List.append((datetime_object.weekday(),Record[2],Record[3],Record[4]))
+                    List.append((datetime_object.weekday(),Record[2],Record[4],Record[5],Record[3]))
             List.sort()
             for ele in List:
                 Output_text += "{0:5} {1:5} {2:5} {3:5}".format(Wekday_names[ele[0]],ele[1],ele[2],Trainings_Name[0][0])
@@ -396,8 +396,8 @@ def training_schedule():
 
                 Day = today + timedelta(days=(Element[0] + 1 - today.weekday()+6))
                 Day = Day.strftime("%d.%m.%Y") 
-                cur.execute("INSERT INTO TRAINING_DATA (ID_variable_Data,Text_Traning_Date,Text_Training_Start,Text_Training_END,TNR_variable_Data) VALUES (%s,%s,%s,%s,%s)"
-                ,(ID,Day,Element[1],Element[2],Element[3]))
+                cur.execute("INSERT INTO TRAINING_DATA (ID_variable_Data,Text_Traning_Date,Text_Training_Start,duration,Text_Training_END,TNR_variable_Data) VALUES (%s,%s,%s,%s,%s,%s)"
+                ,(ID,Day,Element[1],Element[4],Element[2],Element[3]))
                 con.commit()
 
 
