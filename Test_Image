@@ -72,13 +72,13 @@ cur.execute('''CREATE TABLE IF NOT EXISTS ATHLETE
     Text_Athlete_Name TEXT       NOT NULL,
     Text_Athlete_Weight      INT    NOT NULL,
     Text_Athlete_Size INT NOT NULL,
-    ID_variable SERIAL PRIMARY KEY);''')
+    athleten_ID SERIAL PRIMARY KEY);''')
 
 
 cur.execute('''CREATE TABLE IF NOT EXISTS TRAINING 
     (Text_Course_Designation TEXT NOT NULL,
     Text_Course_Description TEXT       NOT NULL,
-    TNR_variable      SERIAL    PRIMARY KEY);''')
+    tranings_ID      SERIAL    PRIMARY KEY);''')
 
 cur.execute('''CREATE TABLE IF NOT EXISTS TRAINING_DATA 
     (ID_variable_Data INT NOT NULL,
@@ -106,7 +106,7 @@ def Erros(ErrorText):
 
 # Add Information
 def TNR_Drop_Aktu():
-    cur.execute("SELECT TNR_variable FROM TRAINING ")
+    cur.execute("SELECT tranings_ID FROM TRAINING ")
     ALL_TNR = cur.fetchall()
     OPTIONS_TNR = ['']
 
@@ -116,7 +116,7 @@ def TNR_Drop_Aktu():
     return OPTIONS_TNR
 
 def Id_Drop_Aktu():
-    cur.execute("SELECT id_variable FROM ATHLETE ")
+    cur.execute("SELECT athleten_ID FROM ATHLETE ")
     ALL_ID = cur.fetchall()
     OPTIONS_ID = ['']
 
@@ -133,9 +133,9 @@ def Calendar_select(event):
     Text = ''
     for ele in Trainings_data:
         if ele[1] == cal.get_date():
-            cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(ele[5]))
+            cur.execute("SELECT text_course_description FROM TRAINING WHERE tranings_ID=" + str(ele[5]))
             Trainings_Name = cur.fetchall()
-            Text += "{0:5} {1:5} {2:5} {3:5}".format(ele[6], ele[4], ele[2], Trainings_Name[0][0]) + '\n'
+            Text += "{0:5} {1:5} {2:5} {3:5}".format(ele[6], ele[2], ele[4], Trainings_Name[0][0])# + '\n'
 
     Output_lable.config(text=(cal.get_date() + '\n' + Text))
 
@@ -145,7 +145,7 @@ def Calendar_select(event):
 def Aktualisieren(event):
 
     record_id = event.widget.get()
-    cur.execute("SELECT * FROM ATHLETE WHERE ID_variable=" + record_id)
+    cur.execute("SELECT * FROM ATHLETE WHERE athleten_ID=" + record_id)
     records = cur.fetchall()
 
     if (records[0][0]) == 'Male':
@@ -165,7 +165,7 @@ def Aktualisieren(event):
 def Aktualisieren_TNR(event):
         
     record_TNR = event.widget.get()
-    cur.execute("SELECT * FROM TRAINING WHERE TNR_variable=" + record_TNR)
+    cur.execute("SELECT * FROM TRAINING WHERE tranings_ID=" + record_TNR)
     records = cur.fetchall()
 
     Text_Course_Designation.delete("1.0",END)
@@ -179,21 +179,21 @@ def focus_next_widget(event):
     return("break")
 
 def Create_Athlete_Button():
-    try:
-        cur.execute("INSERT INTO ATHLETE (Gender_variable,Text_Athlete_Name,Text_Athlete_Weight,Text_Athlete_Size) VALUES (%s,%s,%s,%s)"
-        ,(Gender_variable.get(),Text_Athlete_Name.get("1.0",END), Text_Athlete_Weight.get("1.0",END),Text_Athlete_Size.get("1.0",END)))
-        con.commit()
-        OPTIONS_ID = Id_Drop_Aktu()
-        Text_Athlete_ID2['values'] = OPTIONS_ID
-        Text_Athlete_ID2.current(len(OPTIONS_ID)-1)
+    #try:
+    cur.execute("INSERT INTO ATHLETE (Gender_variable,Text_Athlete_Name,Text_Athlete_Weight,Text_Athlete_Size) VALUES (%s,%s,%s,%s)"
+    ,(Gender_variable.get(),Text_Athlete_Name.get("1.0",END), Text_Athlete_Weight.get("1.0",END),Text_Athlete_Size.get("1.0",END)))
+    con.commit()
+    OPTIONS_ID = Id_Drop_Aktu()
+    Text_Athlete_ID2['values'] = OPTIONS_ID
+    Text_Athlete_ID2.current(len(OPTIONS_ID)-1)
 
-    except DatabaseError:
-        Erros('No entery')
-        con.rollback()
+    #except DatabaseError:
+    #     Erros('No entery')
+    #     con.rollback()
 
 def Delete_Athlete_Button():
     record_id = ID_variable.get()
-    cur.execute("DELETE FROM  ATHLETE WHERE id_variable='%s'" %(record_id))
+    cur.execute("DELETE FROM  ATHLETE WHERE athleten_ID='%s'" %(record_id))
     con.commit()
     cur.execute("DELETE FROM training_data WHERE id_variable_data='%s'" %(record_id))
     con.commit()
@@ -208,7 +208,7 @@ def Delete_Athlete_Button():
 def Change_Athlete_Button():
     record_id = ID_variable.get()
 
-    cur.execute("SELECT * FROM ATHLETE WHERE id_variable=" + record_id)
+    cur.execute("SELECT * FROM ATHLETE WHERE athleten_ID=" + record_id)
 
     cur.execute("Update ATHLETE set gender_variable='%s' , text_Athlete_Name='%s' , text_Athlete_Weight='%s' , text_Athlete_Size='%s' where ID_variable='%s'" 
                 %(Gender_variable.get(),Text_Athlete_Name.get("1.0",END),Text_Athlete_Weight.get("1.0",END),Text_Athlete_Size.get("1.0",END),record_id))
@@ -225,7 +225,7 @@ def Create_Training_Button():
 
 def Delete_Training_Button():
     record_TNR = TNR_variable.get()
-    cur.execute("DELETE FROM  TRAINING WHERE TNR_variable='%s'" %(record_TNR))
+    cur.execute("DELETE FROM  TRAINING WHERE tranings_ID='%s'" %(record_TNR))
     con.commit()
 
     cur.execute("DELETE FROM training_data WHERE tnr_variable_data='%s'" %(record_TNR))
@@ -240,9 +240,9 @@ def Delete_Training_Button():
 def Change_Training_Button():
     record_TNR = TNR_variable.get()
 
-    cur.execute("SELECT * FROM TRAINING WHERE TNR_variable=" + record_TNR)
+    cur.execute("SELECT * FROM TRAINING WHERE tranings_ID=" + record_TNR)
 
-    cur.execute("Update TRAINING set Text_Course_Designation='%s' , Text_Course_Description='%s' where TNR_variable='%s'" 
+    cur.execute("Update TRAINING set Text_Course_Designation='%s' , Text_Course_Description='%s' where tranings_ID='%s'" 
                 %(Text_Course_Designation.get("1.0",END),Text_Course_Description.get("1.0",END),record_TNR))
     
     con.commit()
@@ -263,7 +263,7 @@ def Save_Training_Data_Button():
     Text = ''
     for ele in Trainings_data:
         if ele[1] == cal.get_date():
-            cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(ele[5]))
+            cur.execute("SELECT text_course_description FROM TRAINING WHERE tranings_ID=" + str(ele[5]))
             Trainings_Name = cur.fetchall()
             Text += "{0:5} {1:5} {2:5} {3:5}".format(ele[6], ele[2], ele[4], Trainings_Name[0][0]) + '\n'
     
@@ -285,7 +285,7 @@ def Delete_Training_Data_Button():
         Text = ''
         for ele in Trainings_data:
             if ele[1] == cal.get_date():
-                cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(ele[6]))
+                cur.execute("SELECT text_course_description FROM TRAINING WHERE tranings_ID=" + str(ele[6]))
                 Trainings_Name = cur.fetchall()
                 Text += "{0:5} {1:5} {2:5} {3:5}".format(ele[6], ele[4], ele[2], Trainings_Name[0][0]) + '\n'
 
@@ -312,7 +312,7 @@ def training_schedule():
     def Schedual_Display(event=None):
         Tabel = "{0:5} {1:7} {2:5} {3:5}".format("Day","Start","Stop","Type")
         ID = ID_variable_Data.get()
-        Wekday_names = ["Mo","Di","Mi","Do","Fr","Sa","So"]
+        Wekday_names = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
 
         if var.get() == 0:
             Weekday = today.weekday()
@@ -326,28 +326,27 @@ def training_schedule():
             for Record in Trainings_data:
 
                 datetime_object = datetime.strptime(Record[1], '%d.%m.%Y').date()
+                Trainings_Name = ""
 
-                if ((datetime_object>= today- timedelta(days=7)) or (datetime_object<= today)):
-
-                    cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(Record[5]))
-                    Trainings_Name = cur.fetchall()
+                if ((datetime_object >= today- timedelta(days=7)) and (datetime_object<= today)):
                     List.append((datetime_object.weekday(),Record[2],Record[4],Record[5],Record[3]))
             List.sort()
             for ele in List:
+                cur.execute("SELECT text_course_description FROM TRAINING WHERE tranings_ID=" + str(ele[3]))
+                Trainings_Name = cur.fetchall()
                 Output_text += "{0:5} {1:5} {2:5} {3:5}".format(Wekday_names[ele[0]],ele[1],ele[2],Trainings_Name[0][0])
                 #Record[1].weekday()
 
             Display_Lable.config(text=("ID = "+ str(ID) + '\n' + Tabel + '\n' + Output_text))
             Data_List.set(List)
-
         
         elif var.get() == 1:
             List = []
             Output_text = ''
-            List = [(0,"15:00","17:00",1),(1,"15:00","17:00",1),(2,"15:00","17:00",1),(3,"15:00","17:00",1),(4,"15:00","17:00",1),(5,"-","-","-"),(6,"-","-","-")]
+            List = [(0,"15:00","17:00",1,2),(1,"15:00","17:00",1,2),(2,"15:00","17:00",1,2),(3,"15:00","17:00",1,2),(4,"15:00","17:00",1,2),(5,"-","-","-","-"),(6,"-","-","-","-")]
             for ele in List:
                 if isinstance(ele[3], int) == True:
-                    cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(ele[3]))
+                    cur.execute("SELECT text_course_description FROM TRAINING WHERE tranings_ID=" + str(ele[3]))
                     Trainings_Name = cur.fetchall()
                     Output_text += "{0:5} {1:7} {2:5} {3:5}".format(Wekday_names[ele[0]],ele[1],ele[2],Trainings_Name[0][0])
                 else:
@@ -359,10 +358,10 @@ def training_schedule():
         elif var.get() == 2:
             List = []
             Output_text = ''
-            List = [(0,"15:00","17:00",1),(1,"15:00","17:00",1),(2,"15:00","17:00",1),(3,"15:00","17:00",1),(4,"15:00","17:00",1),(5,"-","-","-"),(6,"-","-","-")]
+            List = [(0,"16:00","17:00",2,2),(1,"16:00","17:00",2,2),(2,"16:00","17:00",2,2),(3,"16:00","17:00",2,2),(4,"16:00","18:00",1,2),(5,"-","-","-","-"),(6,"-","-","-","-")]
             for ele in List:
                 if isinstance(ele[3], int) == True:
-                    cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(ele[3]))
+                    cur.execute("SELECT text_course_description FROM TRAINING WHERE tranings_ID=" + str(ele[3]))
                     Trainings_Name = cur.fetchall()
                     Output_text += "{0:5} {1:7} {2:5} {3:5}".format(Wekday_names[ele[0]],ele[1],ele[2],Trainings_Name[0][0])
                 else:
@@ -374,10 +373,10 @@ def training_schedule():
         elif var.get() == 3:
             List = []
             Output_text = ''
-            List = [(0,"15:00","17:00",1),(1,"15:00","17:00",1),(2,"15:00","17:00",1),(3,"15:00","17:00",1),(4,"15:00","17:00",1),(5,"-","-","-"),(6,"-","-","-")]
+            List = [(0,"15:00","17:00",1,2),(1,"15:00","17:00",2,2),(2,"15:00","17:00",3,2),(3,"15:00","17:00",1,2),(4,"15:00","17:00",2,2),(5,"15:00","17:00",3,2),(6,"-","-","-","-")]
             for ele in List:
                 if isinstance(ele[3], int) == True:
-                    cur.execute("SELECT text_course_description FROM TRAINING WHERE TNR_variable=" + str(ele[3]))
+                    cur.execute("SELECT text_course_description FROM TRAINING WHERE tranings_ID=" + str(ele[3]))
                     Trainings_Name = cur.fetchall()
                     Output_text += "{0:5} {1:7} {2:5} {3:5}".format(Wekday_names[ele[0]],ele[1],ele[2],Trainings_Name[0][0])
                 else:
@@ -427,11 +426,11 @@ def training_schedule():
     
 
     
-    Display_Lable = Label(Schedule_Frame_Left, text='',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15),width=100,height=20, anchor='n')
-    Display_Lable.grid(column=0,row=0,padx=10,pady=5,columnspan=4)
+    Display_Lable = Label(Schedule_Frame_Left, text='',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15),width=50,height=20, anchor='n',justify="left")
+    Display_Lable.grid(column=0,row=0,padx=10,pady=5,columnspan=2)
 
     Training_Choosen = Button(Schedule_Frame_Left,text="Apply Training",command=lambda: Apply_Training())
-    Training_Choosen.grid(column=4,row=1,padx=10,pady=5,sticky='nsew')
+    Training_Choosen.grid(column=2,row=1,padx=10,pady=5,sticky='nsew')
 
     Schedual_Display(event=None)
 
@@ -663,7 +662,7 @@ def Enter_Training_Window():
 
     Output_Name = Label(Thirdframe, text='Training',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
     Output_Name.grid(column=0,row=0,padx=10,pady=5)
-    Output_lable = Label(Thirdframe, text='',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Output_lable = Label(Thirdframe, text='',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15),justify="left")
     Output_lable.grid(column=0,row=1,padx=10,pady=5)
 
     
