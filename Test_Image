@@ -72,6 +72,7 @@ cur.execute('''CREATE TABLE IF NOT EXISTS ATHLETE
     Text_Athlete_Name TEXT       NOT NULL,
     Text_Athlete_Weight      INT    NOT NULL,
     Text_Athlete_Size INT NOT NULL,
+    AGE INT NOT NULL,
     athleten_ID SERIAL PRIMARY KEY);''')
 
 
@@ -162,8 +163,12 @@ def Aktualisieren(event):
     Text_Athlete_Size.delete("1.0",END)
     Text_Athlete_Size.insert("1.0",records[0][3])
 
+    Day_Variable.set(int(str(records[0][4])[0:2]))
+    Month_Variable.set(int(str(records[0][4])[2:4]))
+    Year_Variable.set(int(str(records[0][4])[4:8]))
+
 def Aktualisieren_TNR(event):
-        
+
     record_TNR = event.widget.get()
     cur.execute("SELECT * FROM TRAINING WHERE tranings_ID=" + record_TNR)
     records = cur.fetchall()
@@ -174,14 +179,16 @@ def Aktualisieren_TNR(event):
     Text_Course_Description.insert("1.0",records[0][1])
 
 
+
 def focus_next_widget(event):
     event.widget.tk_focusNext().focus()
     return("break")
 
 def Create_Athlete_Button():
     #try:
-    cur.execute("INSERT INTO ATHLETE (Gender_variable,Text_Athlete_Name,Text_Athlete_Weight,Text_Athlete_Size) VALUES (%s,%s,%s,%s)"
-    ,(Gender_variable.get(),Text_Athlete_Name.get("1.0",END), Text_Athlete_Weight.get("1.0",END),Text_Athlete_Size.get("1.0",END)))
+    AGE = int(Day_Variable.get())*1000000 + int(Month_Variable.get())*10000 + int(Year_Variable.get())
+    cur.execute("INSERT INTO ATHLETE (Gender_variable,Text_Athlete_Name,Text_Athlete_Weight,Text_Athlete_Size,AGE) VALUES (%s,%s,%s,%s,%s)"
+    ,(Gender_variable.get(),Text_Athlete_Name.get("1.0",END), Text_Athlete_Weight.get("1.0",END),Text_Athlete_Size.get("1.0",END),AGE))
     con.commit()
     OPTIONS_ID = Id_Drop_Aktu()
     Text_Athlete_ID2['values'] = OPTIONS_ID
@@ -207,13 +214,15 @@ def Delete_Athlete_Button():
 
 def Change_Athlete_Button():
     record_id = ID_variable.get()
-
+    AGE = int(Day_Variable.get())*1000000 + int(Month_Variable.get())*10000 + int(Year_Variable.get())
     cur.execute("SELECT * FROM ATHLETE WHERE athleten_ID=" + record_id)
 
-    cur.execute("Update ATHLETE set gender_variable='%s' , text_Athlete_Name='%s' , text_Athlete_Weight='%s' , text_Athlete_Size='%s' where ID_variable='%s'" 
-                %(Gender_variable.get(),Text_Athlete_Name.get("1.0",END),Text_Athlete_Weight.get("1.0",END),Text_Athlete_Size.get("1.0",END),record_id))
+    cur.execute("Update ATHLETE set gender_variable='%s' , text_Athlete_Name='%s' , text_Athlete_Weight='%s' , text_Athlete_Size='%s', AGE='%s' where athleten_id='%s'" 
+                %(Gender_variable.get(),Text_Athlete_Name.get("1.0",END),Text_Athlete_Weight.get("1.0",END),Text_Athlete_Size.get("1.0",END),AGE,record_id))
     
     con.commit()
+
+
 
 def Create_Training_Button():
     cur.execute("INSERT INTO TRAINING (Text_Course_Designation,Text_Course_Description) VALUES (%s,%s)"
@@ -437,7 +446,7 @@ def training_schedule():
 def Athlete_Window():
     clear_frame(Second_Fame)
     
-    global Gender_variable,Text_Athlete_Name, Text_Athlete_Weight, Text_Athlete_Size, OPTIONS, OPTIONS_ID, ID_variable, Text_Athlete_ID, Text_Athlete_ID2
+    global Gender_variable,Text_Athlete_Name, Text_Athlete_Weight, Text_Athlete_Size, OPTIONS, OPTIONS_ID, ID_variable, Text_Athlete_ID, Text_Athlete_ID2, AGE_Day, AGE_Month, AGE_Year, Day_Variable,Year_Variable,Month_Variable
     OPTIONS_ID = Id_Drop_Aktu()
 
     Second_Window_TOP = Frame(Second_Fame,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
@@ -469,16 +478,34 @@ def Athlete_Window():
     Text_Athlete_Name.grid(column=1,row=1,padx=10,pady=5,sticky='nsew')
     Text_Athlete_Name.bind("<Tab>", focus_next_widget)
 
+    Label_AGE = Label(Second_Window_RIGHT,text='Age',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
+    Label_AGE.grid(column=0,row=2,padx=10,pady=5,sticky='w')
+
+    Day_Variable = IntVar()
+    Month_Variable = IntVar()
+    Year_Variable = IntVar()
+    Age_Frame = Frame(Second_Window_RIGHT,width=450,height=720,bg=LGrey,bd=5, highlightbackground='white')
+    Age_Frame.grid(column=1,row=2,padx=10,pady=5,sticky='nsew')
+    AGE_Day = Spinbox(Age_Frame, justify=CENTER,width=10,from_=1, to=31,format="%02.0f",textvariable=Day_Variable)
+    AGE_Day.grid(column=0,row=2,padx=5,pady=5,sticky='nsew')
+    AGE_Day.bind("<Tab>", focus_next_widget)
+    AGE_Month = Spinbox(Age_Frame, justify=CENTER,width=10,from_=1, to=12,format="%02.0f",textvariable=Month_Variable)
+    AGE_Month.grid(column=1,row=2,padx=5,pady=5,sticky='nsew')
+    AGE_Month.bind("<Tab>", focus_next_widget)
+    AGE_Year = Spinbox(Age_Frame, justify=CENTER,width=10,from_=1900, to=2022,format="%02.0f",textvariable=Year_Variable)
+    AGE_Year.grid(column=2,row=2,padx=5,pady=5,sticky='nsew')
+    AGE_Year.bind("<Tab>", focus_next_widget)
+
     Label_Athlete_Weight = Label(Second_Window_RIGHT,text='Weight',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
-    Label_Athlete_Weight.grid(column=0,row=2,padx=10,pady=5,sticky='w')
+    Label_Athlete_Weight.grid(column=0,row=3,padx=10,pady=5,sticky='w')
     Text_Athlete_Weight = Text(Second_Window_RIGHT, height = 1, width = 20)
-    Text_Athlete_Weight.grid(column=1,row=2,padx=10,pady=5,sticky='nsew')
+    Text_Athlete_Weight.grid(column=1,row=3,padx=10,pady=5,sticky='nsew')
     Text_Athlete_Weight.bind("<Tab>", focus_next_widget)
 
     Label_Athlete_Size = Label(Second_Window_RIGHT,text='Size',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
-    Label_Athlete_Size.grid(column=0,row=3,padx=10,pady=5,sticky='w')
+    Label_Athlete_Size.grid(column=0,row=4,padx=10,pady=5,sticky='w')
     Text_Athlete_Size = Text(Second_Window_RIGHT, height = 1, width = 20)
-    Text_Athlete_Size.grid(column=1,row=3,padx=10,pady=5,sticky='nsew')
+    Text_Athlete_Size.grid(column=1,row=4,padx=10,pady=5,sticky='nsew')
     Text_Athlete_Size.bind("<Tab>", focus_next_widget)
 
     Label_Athlete_ID = Label(Second_Window_LEFT,text='ID',bg=LGrey,fg='White',pady = 2,font=('Calibri', 15))
@@ -494,10 +521,10 @@ def Athlete_Window():
     Empty_row = Label(Second_Window_LEFT, text='     \n   ', bg=LGrey)
     Empty_row.grid(column=0, row=2,padx=50,pady=5, )
     Empty_row = Label(Second_Window_RIGHT, text='     \n   ', bg=LGrey)
-    Empty_row.grid(column=0, row=4,padx=50,pady=5, )
+    Empty_row.grid(column=0, row=5,padx=50,pady=5, )
 
     canvas_Second_Window = Canvas(Second_Window_RIGHT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
-    canvas_Second_Window.grid(row=5,padx=50,pady=5, columnspan = 2,sticky='ew')
+    canvas_Second_Window.grid(row=6,padx=50,pady=5, columnspan = 2,sticky='ew')
     canvas_Second_Window2 = Canvas(Second_Window_LEFT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
     canvas_Second_Window2.grid(row=3,padx=50,pady=5, columnspan = 2,sticky='w')
     canvas_Second_Window3= Canvas(Second_Window_LEFT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
