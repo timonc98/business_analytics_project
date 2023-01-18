@@ -27,12 +27,12 @@ root = Tk()
 root.config(bg=DGrey)
 root.title('Business Athletics')
 
-##Clear Frame
+## Clear Frame
 def clear_frame(Frame_Name):
    for widgets in Frame_Name.winfo_children():
       widgets.destroy()
 
-#### Active Runder Knopf
+#### Diese Funktion dient den Active und inactiven Buttons mit den Bildern
 def Active_Button(ButtonName,Canvas_Name,Frame,ImageName_Active,ImageName_Inctive,Commando,Color,ButtonOrder):
     Creat_Bild_active = Image.open(ImageName_Active)
     Creat_Bild_inactive = Image.open(ImageName_Inctive)
@@ -58,11 +58,14 @@ def Active_Button(ButtonName,Canvas_Name,Frame,ImageName_Active,ImageName_Inctiv
     ButtonName.bind("<Leave>", on_leave)
 
 ### Database
+# Verbindung zu der Datenbank
 con = psycopg2.connect(database="postgres", user="postgres", password="Lukasso007", host="127.0.0.1", port="5432")
 
 print("Database opened successfully")
 
-#CREATE TABLE ATHELTE
+# DIeser Abschnitt erstellt die Tabellen falls dieser nicht existerien
+
+
 
 cur = con.cursor()
 
@@ -93,12 +96,13 @@ cur.execute('''CREATE TABLE IF NOT EXISTS TRAINING_DATA
 con.commit()
 print("Table created successfully")
 
-#### Create Funktion
+#### Weitere Funktion
+# Darunter Funktionen zur aktuallisieren und Elementen in der GUI
 
-# Information List
+# Informationslist dient nur dem Programierer
 athletes = []
 
-#Errolist
+# Error Funktion mit Fenster
 def Erros(ErrorText):
    messagebox.showerror('Python Error', 'Error: ' + ErrorText)
 #    con = psycopg2.connect(database="postgres", user="postgres", password="Lukasso007", host="127.0.0.1", port="5432")
@@ -142,7 +146,14 @@ def Calendar_select(event):
 
 
 
-### Button FUnktions
+### Button Funktions
+
+'''
+In diesem abschnitt sind alle Button Funktionen
+Um Daten hinzuzufügen, löschen und aktuallisieren
+
+'''
+
 def Aktualisieren(event):
 
     record_id = event.widget.get()
@@ -177,7 +188,6 @@ def Aktualisieren_TNR(event):
     Text_Course_Designation.insert("1.0",records[0][0])
     Text_Course_Description.delete("1.0",END)
     Text_Course_Description.insert("1.0",records[0][1])
-
 
 
 def focus_next_widget(event):
@@ -278,7 +288,7 @@ def Save_Training_Data_Button():
     
     Output_lable.config(text=(cal.get_date() + '\n' + Text))
 
-
+#Weiter Delete Fenster um Training zu löschen:
 def Delete_Training_Data_Button():
     def Delete_Training():
         
@@ -315,6 +325,8 @@ def Delete_Training_Data_Button():
     Delete_button = Button(Delete_window,text="Delete Training",command=Delete_Training)
     Delete_button.grid(column=0,row=2,padx=10,pady=5,sticky='nsew')
 
+#Weiteres Fenster um Trainingsplan hinzuzufügen
+#Hier kann der Nutzer einen Trainingsplan für die Nächste woche planen
 def training_schedule():
     mylist = []
     Data_List = StringVar(value=mylist)
@@ -413,9 +425,9 @@ def training_schedule():
     
     Schedule_window = Toplevel()
     Schedule_window.config(bg=DGrey)
-    Schedule_window.title('Trainings Schedual')
+    Schedule_window.title('Training Schedule')
 
-    Schedule_Lable = Label(Schedule_window,text='Choose Traingins Schedual:',bg=DGrey,fg='White',pady = 2,font=('Calibri', 18))
+    Schedule_Lable = Label(Schedule_window,text='Choose Training Schedule:',bg=DGrey,fg='White',pady = 2,font=('Calibri', 18))
     Schedule_Lable.grid(column=0,row=0,padx=10,pady=5,sticky='nsew')
 
 
@@ -425,7 +437,7 @@ def training_schedule():
     Schedule_Frame_Left.grid(column=1,row=1,padx=10,pady=5)
 
 
-    Ckeckbox_text = ['Repeat Training','Training Schedual 1','Training Schedual 2','Training Schedual 3']
+    Ckeckbox_text = ['Repeat Training','Training Schedule 1','Training Schedule 2','Training Schedule 3']
     var = IntVar()         #Creating a variable which will track the selected checkbutton
     cb = []                   #Empty list which is going to hold all the checkbutton
     for i in range(4):
@@ -442,7 +454,7 @@ def training_schedule():
     Training_Choosen.grid(column=2,row=1,padx=10,pady=5,sticky='nsew')
 
     Schedual_Display(event=None)
-
+## Erster Button Create Athlete -> in Second Frame
 def Athlete_Window():
     clear_frame(Second_Fame)
     
@@ -522,7 +534,9 @@ def Athlete_Window():
     Empty_row.grid(column=0, row=2,padx=50,pady=5, )
     Empty_row = Label(Second_Window_RIGHT, text='     \n   ', bg=LGrey)
     Empty_row.grid(column=0, row=5,padx=50,pady=5, )
-
+    ## Der Untere Teil dient der Activen und Inactiven Button
+    # dort muss als erste eine Canvas erstelltwerden  werden in dem ein Button eingefügt werden kann
+    # danach wird der Button mit Bildern und Funktionen verändert
     canvas_Second_Window = Canvas(Second_Window_RIGHT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
     canvas_Second_Window.grid(row=6,padx=50,pady=5, columnspan = 2,sticky='ew')
     canvas_Second_Window2 = Canvas(Second_Window_LEFT,width=200,height=100, bg=LGrey,bd=0, highlightbackground=LGrey)
@@ -540,7 +554,7 @@ def Athlete_Window():
     Active_Button(Create_Athlete,canvas_Second_Window,canvas_Second_Window,"Images\Create_Athlete_active.png","Images\Create_Athlete_inactive.png",Create_Athlete_Button,LGrey,LEFT)
     Active_Button(Change_Athlete,canvas_Second_Window2,canvas_Second_Window2,"Images\Change_Athlete_active.png","Images\Change_Athlete_inactive.png",Change_Athlete_Button,LGrey,LEFT)
     Active_Button(Delete_Athlete,canvas_Second_Window3,canvas_Second_Window3,"Images\Delete_Athlete_active.png","Images\Delete_Athlete_inactive.png",Delete_Athlete_Button,LGrey,LEFT)
-
+# Zweiter Button Create Course -> in Second Frae
 def Course_Window():
     clear_frame(Second_Fame)
     
@@ -608,7 +622,7 @@ def Course_Window():
     Active_Button(Change_Traning,canvas_Second_Window2,canvas_Second_Window2,"Images\Change_Training_active.png","Images\Change_Training_inactive.png",Change_Training_Button,LGrey,LEFT)
     Active_Button(Delete_Training,canvas_Second_Window3,canvas_Second_Window3,"Images\Delete_Training_active.png","Images\Delete_Training_inactive.png",Delete_Training_Button,LGrey,LEFT)
 
-
+# Dritter Frame Enter Tranining -> in second frame
 def Enter_Training_Window():
     clear_frame(Second_Fame)
     
@@ -716,7 +730,7 @@ def quit():
     root.destroy()
     
 
-### Main
+### Main WIndow mit den Knöpfen -> Create Training, Create Course und Enter Training
 
 Main_frame = Frame(root,width=300,height=500,bg=LGrey,bd=5, highlightbackground='white')
 Main_frame.grid(column=0,row=0,padx=10,pady=5)
