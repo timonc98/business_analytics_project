@@ -59,7 +59,7 @@ def Active_Button(ButtonName,Canvas_Name,Frame,ImageName_Active,ImageName_Inctiv
 
 ### Database
 # Verbindung zu der Datenbank
-con = psycopg2.connect(database="postgres", user="postgres", password="Lukasso007", host="127.0.0.1", port="5432")
+con = psycopg2.connect(database="postgres", user="postgres", password="password", host="127.0.0.1", port="5432")
 
 print("Database opened successfully")
 
@@ -150,7 +150,7 @@ def Calendar_select(event):
 
 '''
 In diesem abschnitt sind alle Button Funktionen
-Um Daten hinzuzufügen, löschen und aktuallisieren
+Um Daten hinzuzufügen, löschen und aktualisieren
 
 '''
 
