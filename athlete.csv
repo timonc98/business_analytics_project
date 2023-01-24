@@ -1,0 +1,14 @@
+gender_variable,text_athlete_name,text_athlete_weight,text_athlete_size,age,athleten_id
+"Male,""Timon"
+",80,180,10031998,1
+Male,Marcel"
+",80,180,10061999,2
+Male,Lukas"
+",80,180,10061997,3
+Female,Alexandra"
+",60,170,3112000,4
+Divers,Max"
+",60,170,3111980,5
+Divers,Karlo"
+",80,180,1011980,6
+"
